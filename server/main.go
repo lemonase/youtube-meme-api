@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
@@ -35,18 +36,26 @@ var videos []video
 
 // Init - Sets all routes and initializes the server
 func Init() {
+	// get port from environment
+	var port string = "8000"
+	var ok bool
+	portEnv, ok := os.LookupEnv("PORT")
+	if ok {
+		port = portEnv
+	}
+	port = ":" + port
+
 	playlists = fetchAllPlaylistsFromSheet()
 
 	// TODO add middleware for logging and checking/settings http headers for a JSON response
-
 	http.HandleFunc("/playlist/all", getAllPlaylists)
 	http.HandleFunc("/playlist/random", getRandomPlaylist)
 	http.HandleFunc("/video/all", getAllVideos)
 	http.HandleFunc("/video/random", getRandomVideo)
 	http.HandleFunc("/update", updatePlaylistValues)
 
-	log.Printf("Started server listenting on http://localhost:8000")
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	log.Printf("Server listenting on http://localhost" + port)
+	log.Fatal(http.ListenAndServe(port, nil))
 }
 
 /*
