@@ -37,6 +37,8 @@ var videos []video
 func Init() {
 	playlists = fetchAllPlaylistsFromSheet()
 
+	// TODO add middleware for logging and checking/settings http headers for a JSON response
+
 	http.HandleFunc("/playlist/all", getAllPlaylists)
 	http.HandleFunc("/playlist/random", getRandomPlaylist)
 	http.HandleFunc("/video/all", getAllVideos)
@@ -51,23 +53,6 @@ func Init() {
  * API Router Functions
  */
 
-func getAllPlaylists(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-	fmt.Fprintf(w, "[")
-	for i, pl := range playlists {
-		j, err := json.MarshalIndent(pl, "", "  ")
-		if err != nil {
-			log.Fatalf("Could not marshal json %v", err)
-		}
-		fmt.Fprintf(w, string(j))
-		if i != len(playlists)-1 {
-			fmt.Fprintf(w, ",")
-		}
-	}
-	fmt.Fprintf(w, "]")
-}
-
 func updatePlaylistValues(w http.ResponseWriter, r *http.Request) {
 	// TODO set up a function on the sheet that calls this endpoint when the sheet changes
 	sheets.PlaylistLength, sheets.PlaylistValues = sheets.GetSheetValues(sheets.SheetID, sheets.PlaylistRange)
@@ -75,15 +60,25 @@ func updatePlaylistValues(w http.ResponseWriter, r *http.Request) {
 	playlists = fetchAllPlaylistsFromSheet()
 }
 
-func getAllVideos(w http.ResponseWriter, r *http.Request) {
-	for _, v := range fetchAllVideosFromSheet() {
-		j, err := json.MarshalIndent(v, "", "  ")
-		if err != nil {
-			log.Fatalf("Could not marshal %v", err)
-		}
+func getAllPlaylists(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-		fmt.Fprintf(w, string(j))
+	j, err := json.MarshalIndent(playlists, "", "  ")
+	if err != nil {
+		log.Fatalf("Could not marshal data %v", err)
 	}
+
+	fmt.Fprintf(w, string(j))
+}
+
+func getAllVideos(w http.ResponseWriter, r *http.Request) {
+	videoList := fetchAllVideosFromSheet()
+	j, err := json.MarshalIndent(videoList, "", "  ")
+	if err != nil {
+		log.Fatalf("Could not marshal %v", err)
+	}
+
+	fmt.Fprintf(w, string(j))
 }
 
 func getRandomPlaylist(w http.ResponseWriter, r *http.Request) {
@@ -100,7 +95,6 @@ func getRandomVideo(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Could not unmarshal %v", err)
 	}
 	fmt.Fprintf(w, string(j))
-
 }
 
 /*
