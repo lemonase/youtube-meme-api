@@ -22,6 +22,18 @@ func HandleAll(w http.ResponseWriter, r *http.Request) {
 
 // Videos
 
+// HandleVideosAll -
+func HandleVideosAll(w http.ResponseWriter, r *http.Request) {
+	videos := youtube.VideoResponses
+
+	j, err := json.MarshalIndent(videos, "", "  ")
+	if err != nil {
+		log.Fatalf("Could not marshal data %v", err)
+	}
+
+	fmt.Fprintf(w, string(j))
+}
+
 // HandleVideosRandom -
 func HandleVideosRandom(w http.ResponseWriter, r *http.Request) {
 	rand.Seed(time.Now().UnixNano())
@@ -88,23 +100,30 @@ func HandleChannelsRandom(w http.ResponseWriter, r *http.Request) {
 // UpdateAllValuesFromSheet -
 func UpdateAllValuesFromSheet(w http.ResponseWriter, r *http.Request) {
 	sheets.FetchAllValues()
+
+	youtube.ChannelResponses = nil
+	youtube.PlaylistResponses = nil
+	youtube.VideoResponses = nil
 	youtube.FetchAllListsFromSheet()
 }
 
 // UpdateAllChannelsFromSheet -
 func UpdateAllChannelsFromSheet(w http.ResponseWriter, r *http.Request) {
 	sheets.FetchChannelValues()
+	youtube.ChannelResponses = nil
 	youtube.FetchAllChannels()
 }
 
 // UpdateAllPlaylistsFromSheet -
 func UpdateAllPlaylistsFromSheet(w http.ResponseWriter, r *http.Request) {
 	sheets.FetchPlaylistValues()
+	youtube.PlaylistResponses = nil
 	youtube.FetchAllPlaylists()
 }
 
 // UpdateAllVideosFromSheet -
 func UpdateAllVideosFromSheet(w http.ResponseWriter, r *http.Request) {
 	sheets.FetchVideoValues()
+	youtube.VideoResponses = nil
 	youtube.FetchAllVideos()
 }

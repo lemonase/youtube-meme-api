@@ -60,8 +60,6 @@ func FetchAllListsFromSheet() {
 
 // FetchAllChannels - Fetches youtube data for all channel values on the sheet
 func FetchAllChannels() {
-	ChannelResponses = nil
-	PlaylistResponses = nil
 	for _, url := range sheets.ChannelValues {
 		channelURL := string(url[0].(string))
 		ChannelResponses = append(ChannelResponses, GetChannelResponseFromURL(channelURL))
@@ -75,7 +73,6 @@ func FetchAllChannels() {
 
 // FetchAllPlaylists - Fetches youtube data for all playlist values on the sheet
 func FetchAllPlaylists() {
-	PlaylistResponses = nil
 	for _, url := range sheets.PlaylistValues {
 		playlistURL := string(url[0].(string))
 		PlaylistResponses = append(PlaylistResponses, GetPlaylistRepsonseFromURL(playlistURL))
@@ -85,7 +82,6 @@ func FetchAllPlaylists() {
 
 // FetchAllVideos - Fetches youtube data for all the videos on the sheet
 func FetchAllVideos() {
-	VideoResponses = nil
 	for _, url := range sheets.VideoValues {
 		videoURL := string(url[0].(string))
 		VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
