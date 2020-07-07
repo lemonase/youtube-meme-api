@@ -12,8 +12,8 @@ import (
 
 // CatchAll -
 func CatchAll(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	fmt.Fprintf(w, "Hello\nHandler")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprintf(w, "URL Not Found")
 }
 
 // Videos

@@ -20,6 +20,14 @@ func InitServer() {
 		port = portEnv
 	}
 	port = ":" + port
+
+	// TODO use flags and add configuration options
+	// to use an API key instead of default OAuth,
+	// which looks for credentials.json, performs auth,
+	// and writes an auto-refreshing token.json file.
+	// While this is robust, a simple API key would
+	// be much more lightweight
+
 	mux := http.NewServeMux()
 
 	// all
@@ -46,9 +54,9 @@ func InitServer() {
 	log.Fatal(server.ListenAndServe())
 }
 
-// FetchResources - Calls sheets and youtube APIs for data
-func FetchResources() {
+// FetchInitResources - Calls sheets and youtube APIs for data
+func FetchInitResources() {
+	log.Printf("::Fetching initial data::\n")
 	sheets.FetchAllValues()
-	log.Println()
 	youtube.FetchAllListsFromSheet()
 }

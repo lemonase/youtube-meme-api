@@ -32,23 +32,41 @@ const SheetID = "1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs"
 // Client - The authroized youtube service client (either with a key or a token)
 var Client = getSheetsClientAuth()
 
+// VideoRange -
 var VideoRange = "Sheet1!A2:A1000"
+
+// PlaylistRange -
 var PlaylistRange = "Sheet1!C2:C1000"
+
+// ChannelRange -
 var ChannelRange = "Sheet1!E2:E1000"
 
+// ChannelValues -
 var ChannelValues [][]interface{}
+
+// PlaylistValues -
 var PlaylistValues [][]interface{}
+
+// VideoValues -
 var VideoValues [][]interface{}
 
+// ChannelLength -
 var ChannelLength int
+
+// PlaylistLength -
 var PlaylistLength int
+
+// VideoLength -
 var VideoLength int
 
-// GetSheetValues - wrapper to SheetsAPI
+/*
+ * Fetch Functions
+ */
+
+// FetchSheetValues - wrapper to SheetsAPI
 // Params - takes a sheetID for a spreadsheet, and a range of values to get
 // Returns - the length of the values and the values themselves
 func FetchSheetValues(sheetID string, playlistRange string) (int, [][]interface{}) {
-	// TODO fetch data concurrently
 	resp, err := Client.Spreadsheets.Values.Get(SheetID, playlistRange).Do()
 	if err != nil {
 		log.Fatalf("Error fetching sheet%v\n", err)
@@ -58,21 +76,7 @@ func FetchSheetValues(sheetID string, playlistRange string) (int, [][]interface{
 	return len(resp.Values), resp.Values
 }
 
-func FetchChannelValues() {
-	ChannelLength, ChannelValues = FetchSheetValues(SheetID, ChannelRange)
-	log.Printf("Number of Channels: %d\n", ChannelLength)
-}
-
-func FetchPlaylistValues() {
-	PlaylistLength, PlaylistValues = FetchSheetValues(SheetID, PlaylistRange)
-	log.Printf("Number of Playlists: %d\n", PlaylistLength)
-}
-
-func FetchVideoValues() {
-	VideoLength, VideoValues = FetchSheetValues(SheetID, VideoRange)
-	log.Printf("Number of Videos: %d\n", VideoLength)
-}
-
+// FetchAllValues -
 func FetchAllValues() {
 	log.Println("::Fetching All Sheets::")
 	FetchChannelValues()
@@ -80,6 +84,29 @@ func FetchAllValues() {
 	FetchVideoValues()
 }
 
+// FetchChannelValues -
+func FetchChannelValues() {
+	ChannelLength, ChannelValues = FetchSheetValues(SheetID, ChannelRange)
+	log.Printf("Number of Channels: %d\n", ChannelLength)
+}
+
+// FetchPlaylistValues -
+func FetchPlaylistValues() {
+	PlaylistLength, PlaylistValues = FetchSheetValues(SheetID, PlaylistRange)
+	log.Printf("Number of Playlists: %d\n", PlaylistLength)
+}
+
+// FetchVideoValues -
+func FetchVideoValues() {
+	VideoLength, VideoValues = FetchSheetValues(SheetID, VideoRange)
+	log.Printf("Number of Videos: %d\n", VideoLength)
+}
+
+/*
+ * Random Functions
+ */
+
+// GetRandomVideo -
 func GetRandomVideo() string {
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn(VideoLength)
@@ -93,13 +120,16 @@ func GetRandomPlaylist() string {
 	return fmt.Sprintf("%s", PlaylistValues[randIndex][0])
 }
 
+// GetRandomChannel -
 func GetRandomChannel() string {
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn(ChannelLength)
 	return fmt.Sprintf("%s", ChannelValues[randIndex][0])
 }
 
-// Client Functions
+/*
+ * Client Functions
+ */
 
 func getSheetsClientUnauth() *sheets.Service {
 	httpClient := &http.Client{}
