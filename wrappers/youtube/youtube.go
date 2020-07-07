@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -31,30 +34,155 @@ var Client = getYoutubeClient()
 // PageSize - the number of items that will be returned in a single API call
 var PageSize int64 = 50
 
-// GetPlaylistIDFromURL - takes a URL string and gets everything to the right
-// of "list=", which should be the playlistID
-func GetPlaylistIDFromURL(url string) string {
-	return url[strings.LastIndex(url, "list=")+5:]
+// VideoResponses - holds responses from videos
+var VideoResponses []*youtube.VideoListResponse
+
+// PlaylistResponses - holds responses from playlists
+var PlaylistResponses []*youtube.PlaylistListResponse
+
+// PlaylistItemResponses - holds responses for items of a playlist
+var PlaylistItemResponses []*youtube.PlaylistItemListResponse
+
+// ChannelResponses - holds responses from channels
+var ChannelResponses []*youtube.ChannelListResponse
+
+/*
+ * Fetching
+ */
+
+// FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
+func FetchAllListsFromSheet() {
+	log.Println("::Fetching Youtube Data::")
+	FetchAllVideos()
+	FetchAllPlaylists()
+	FetchAllChannels()
 }
 
-// GetPlaylistRepsonseFromURL - takes a URL string and returns an playlist response
-func GetPlaylistRepsonseFromURL(url string) *youtube.PlaylistListResponse {
-	return GetPlaylistResponse(GetPlaylistIDFromURL(url))
+// FetchAllChannels - Fetches youtube data for all channel values on the sheet
+func FetchAllChannels() {
+	ChannelResponses = nil
+	PlaylistResponses = nil
+	for _, url := range sheets.ChannelValues {
+		channelURL := string(url[0].(string))
+		ChannelResponses = append(ChannelResponses, GetChannelResponseFromURL(channelURL))
+	}
+	for _, channelRes := range ChannelResponses {
+		uploadPl := GetPlaylistResponseFromID(channelRes.Items[0].ContentDetails.RelatedPlaylists.Uploads)
+		PlaylistResponses = append(PlaylistResponses, uploadPl)
+	}
+	log.Printf("Number of Channels: %d\n", len(ChannelResponses))
 }
 
-// GetPlaylistItemsResponseFromURL - takes a URL string and returns playlist items response
-func GetPlaylistItemsResponseFromURL(url string) *youtube.PlaylistItemListResponse {
-	return GetPlaylistItemsResponse(GetPlaylistIDFromURL(url), 0)
+// FetchAllPlaylists - Fetches youtube data for all playlist values on the sheet
+func FetchAllPlaylists() {
+	PlaylistResponses = nil
+	for _, url := range sheets.PlaylistValues {
+		playlistURL := string(url[0].(string))
+		PlaylistResponses = append(PlaylistResponses, GetPlaylistRepsonseFromURL(playlistURL))
+	}
+	log.Printf("Number of Playlists: %d\n", len(PlaylistResponses))
 }
 
-// GetPlaylistResponse - takes a playlist id and executes API call to playlists service
-// https://developers.google.com/youtube/v3/docs/playlists/list#response
-func GetPlaylistResponse(id string) *youtube.PlaylistListResponse {
-	// part is a required parameter that describes the resource properties in the response
-	// https://developers.google.com/youtube/v3/docs/playlists/list#parameters
+// FetchAllVideos - Fetches youtube data for all the videos on the sheet
+func FetchAllVideos() {
+	VideoResponses = nil
+	for _, url := range sheets.VideoValues {
+		videoURL := string(url[0].(string))
+		VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
+	}
+	log.Printf("Number of Videos: %d\n", len(VideoResponses))
+}
+
+/*
+ * Randomizers
+ */
+
+// GetRandomVideo - Returns a random video response
+func GetRandomVideo() *youtube.VideoListResponse {
+	rand.Seed(time.Now().UnixNano())
+	randIndex := int64(rand.Intn(len(VideoResponses)))
+	return VideoResponses[randIndex]
+}
+
+// GetRandomPlaylist - Returns a random playlist response
+func GetRandomPlaylist() *youtube.PlaylistListResponse {
+	rand.Seed(time.Now().UnixNano())
+	randIndex := int64(rand.Intn(len(PlaylistResponses)))
+	return PlaylistResponses[randIndex]
+}
+
+// GetRandomPlaylistItem - Returns a random playlist video response
+func GetRandomPlaylistItem() *youtube.PlaylistItem {
+	randomPlaylist := GetRandomPlaylist()
+	id := randomPlaylist.Items[0].Id
+	videoCount := randomPlaylist.Items[0].ContentDetails.ItemCount
+	randIndex := int64(rand.Intn(int(videoCount)))
+
+	res := GetPlaylistItemsResponseFromIDAtIndex(id, randIndex)
+	return res.Items[randIndex%PageSize]
+}
+
+// GetRandomChannel - Returns a random playlist channel response
+func GetRandomChannel() *youtube.ChannelListResponse {
+	rand.Seed(time.Now().UnixNano())
+	randIndex := int64(rand.Intn(len(ChannelResponses)))
+	return ChannelResponses[randIndex]
+}
+
+/*
+ * Video Utils
+ */
+
+// GetVideoIDFromURL - Get the video id from a given url
+func GetVideoIDFromURL(url string) string {
+	param := "v="
+	if strings.Contains(url, param) {
+		return url[strings.LastIndex(url, param)+len(param):]
+	}
+	log.Fatalf("Could not retrive Video ID from URL: %s", url)
+	return ""
+}
+
+// GetVideoResponseFromID - Returns a video response from video ID
+func GetVideoResponseFromID(id string) *youtube.VideoListResponse {
 	part := []string{"snippet,contentDetails"}
 
-	// TODO make api call concurrently
+	Call := Client.Videos.List(part)
+	Call = Call.Id(id)
+
+	res, err := Call.Do()
+	if err != nil {
+		log.Fatalf("Error fetching youtube video %v\n", err)
+	}
+
+	return res
+}
+
+// GetVideoResponseFromURL - Returns a video response from a video URL
+func GetVideoResponseFromURL(url string) *youtube.VideoListResponse {
+	return GetVideoResponseFromID(GetVideoIDFromURL(url))
+}
+
+/*
+ * Playlist Utils
+ */
+
+// GetPlaylistIDFromURL - Takes a URL string and gets everything to the right of playlist param
+func GetPlaylistIDFromURL(url string) string {
+	possibleParams := []string{"list=", "p="}
+	for _, p := range possibleParams {
+		if strings.Contains(url, p) {
+			return url[strings.LastIndex(url, p)+len(p):]
+		}
+	}
+	log.Fatalf("Could not retrieve Playlist ID from URL: %s", url)
+	return ""
+}
+
+// GetPlaylistResponseFromID - Takes a playlist id and executes API call to playlists service
+func GetPlaylistResponseFromID(id string) *youtube.PlaylistListResponse {
+	part := []string{"snippet,contentDetails"}
+
 	Call := Client.Playlists.List(part)
 	Call = Call.Id(id)
 
@@ -62,14 +190,22 @@ func GetPlaylistResponse(id string) *youtube.PlaylistListResponse {
 	if err != nil {
 		log.Fatalf("Error fetching playlist %v\n", err)
 	}
+	if len(res.Items) < 1 {
+		log.Fatalf("No items in playlist %s\n", id)
+	}
 
 	return res
 }
 
-// GetPlaylistItemsResponse - takes an id and position of a video in a playlist
-// returns a response with a list of items (videos) and page info
-// https://developers.google.com/youtube/v3/docs/playlistItems/list
-func GetPlaylistItemsResponse(id string, videoPosition int64) *youtube.PlaylistItemListResponse {
+// GetPlaylistRepsonseFromURL - Takes a URL string and returns an playlist response
+func GetPlaylistRepsonseFromURL(url string) *youtube.PlaylistListResponse {
+	return GetPlaylistResponseFromID(GetPlaylistIDFromURL(url))
+}
+
+// Playlist *Items* (different from playlist response)
+
+// GetPlaylistItemsResponseFromIDAtIndex - Takes an id and position of a video in a playlist and returns a response
+func GetPlaylistItemsResponseFromIDAtIndex(id string, videoIndex int64) *youtube.PlaylistItemListResponse {
 	var correctPageRes *youtube.PlaylistItemListResponse
 
 	part := []string{"snippet,contentDetails"}
@@ -80,8 +216,7 @@ func GetPlaylistItemsResponse(id string, videoPosition int64) *youtube.PlaylistI
 
 	// pagination occurs in the API with tokens, so we iterate through
 	// pages until the index of the requested video is within the page
-	// TODO make this faster with goroutines
-	for pageIndex := int64(0); pageIndex <= videoPosition; pageIndex += PageSize {
+	for pageIndex := int64(0); pageIndex <= videoIndex; pageIndex += PageSize {
 		res, err := Call.Do()
 		if err != nil {
 			log.Fatalf("Error fetching playlist %v\n", err)
@@ -93,7 +228,63 @@ func GetPlaylistItemsResponse(id string, videoPosition int64) *youtube.PlaylistI
 	return correctPageRes
 }
 
-// ChannelsListByUsername - example function
+// GetPlaylistItemsResponseFromURLAtIndex - Takes a URL string and index, returns playlist items response
+func GetPlaylistItemsResponseFromURLAtIndex(url string, videoIndex int64) *youtube.PlaylistItemListResponse {
+	return GetPlaylistItemsResponseFromIDAtIndex(GetPlaylistIDFromURL(url), videoIndex)
+}
+
+/*
+ * Channels
+ */
+
+// GetChannelIDFromURL - Takes a string, splits it on "/" and gets the last field
+func GetChannelIDFromURL(url string) string {
+	paramList := []string{"/channel/", "/c/", "/user/"}
+	for _, p := range paramList {
+		if strings.Contains(url, p) {
+			slice := strings.Split(url, "/")
+			return string(slice[len(slice)-1:][0])
+		}
+	}
+	log.Fatalf("Could not retrieve Channel ID from URL: %s", url)
+	return ""
+}
+
+// GetChannelResponseFromID - Returns a channel response given an ID
+func GetChannelResponseFromID(id string) *youtube.ChannelListResponse {
+	part := []string{"snippet,contentDetails"}
+
+	Call := Client.Channels.List(part)
+	Call.MaxResults(PageSize)
+	Call.Id(id)
+
+	res, err := Call.Do()
+	if err != nil {
+		log.Fatalf("Error fetching channel details %v\n", err)
+	}
+	if len(res.Items) < 1 {
+		newCall := Client.Channels.List(part)
+		newCall.ForUsername(id)
+		newRes, err := newCall.Do()
+		if err != nil {
+			log.Fatalf("Error fetching channel details %v\n", err)
+		}
+		if len(newRes.Items) < 1 {
+			log.Fatalf("No items in channel response for username: %s", id)
+		}
+
+		return newRes
+	}
+
+	return res
+}
+
+// GetChannelResponseFromURL - Returns a channel response from a URL
+func GetChannelResponseFromURL(url string) *youtube.ChannelListResponse {
+	return GetChannelResponseFromID(GetChannelIDFromURL(url))
+}
+
+// ChannelsListByUsername - example function from docs
 func ChannelsListByUsername(username string) {
 	call := Client.Channels.List(strings.Split("snippet,contentDetails", ","))
 	call = call.ForUsername(username)

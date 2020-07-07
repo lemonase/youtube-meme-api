@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
-	server.Init()
+	server.FetchResources()
+	server.InitServer()
 }

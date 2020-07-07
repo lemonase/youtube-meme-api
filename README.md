@@ -13,8 +13,14 @@ The endpoints (so far) are:
 
 ## GET
 
-- /playlists/all - Get all playlists
-- /playlists/random - Get a random playlist
-- /video/random - Get a random video from a random playlist
-- /video/all - Get all videos from all playlists
-- /update - Refresh playlist data from the Google Sheet
+### Random Endpoints
+
+- `/api/v1/random/video` - Gets a random video
+- `/api/v1/random/playlist` - Gets a random playlist
+- `/api/v1/random/channel` - Gets a random channel
+
+### Aggregate Endpoints
+
+- `/api/v1/playlist/all` - Gets all playlists
+- `/api/v1/channel/all` - Gets all channels
+
