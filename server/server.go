@@ -23,17 +23,17 @@ func InitServer() {
 	mux := http.NewServeMux()
 
 	// all
-	mux.HandleFunc("/", handlers.HandleAll)
+	mux.HandleFunc("/", handlers.CatchAll)
 
 	// random
-	mux.HandleFunc("/api/v1/random/video", handlers.HandleVideosRandom)
-	mux.HandleFunc("/api/v1/random/playlist", handlers.HandlePlaylistsRandom)
-	mux.HandleFunc("/api/v1/random/channel", handlers.HandleChannelsRandom)
+	mux.HandleFunc("/api/v1/random/video", handlers.RandomVideo)
+	mux.HandleFunc("/api/v1/random/playlist", handlers.RandomPlaylist)
+	mux.HandleFunc("/api/v1/random/channel", handlers.RandomChannel)
 
 	// all
-	mux.HandleFunc("/api/v1/all/videos", handlers.HandleVideosAll)
-	mux.HandleFunc("/api/v1/all/playlists", handlers.HandlePlaylistsAll)
-	mux.HandleFunc("/api/v1/all/channels", handlers.HandleChannelsAll)
+	mux.HandleFunc("/api/v1/all/videos", handlers.AllVideos)
+	mux.HandleFunc("/api/v1/all/playlists", handlers.AllPlaylists)
+	mux.HandleFunc("/api/v1/all/channels", handlers.AllChannels)
 
 	// updates
 	mux.HandleFunc("/api/v1/update/all", handlers.UpdateAllValuesFromSheet)

@@ -4,29 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"time"
 
 	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
 	"github.com/lemonase/youtube-meme-api/wrappers/youtube"
 )
 
-// All
-
-// HandleAll -
-func HandleAll(w http.ResponseWriter, r *http.Request) {
+// CatchAll -
+func CatchAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	fmt.Fprintf(w, "Hello\nHandler")
 }
 
 // Videos
 
-// HandleVideosAll -
-func HandleVideosAll(w http.ResponseWriter, r *http.Request) {
-	videos := youtube.VideoResponses
-
-	j, err := json.MarshalIndent(videos, "", "  ")
+// AllVideos - Get all singular videos responses
+func AllVideos(w http.ResponseWriter, r *http.Request) {
+	j, err := json.MarshalIndent(youtube.VideoResponses, "", "  ")
 	if err != nil {
 		log.Fatalf("Could not marshal data %v", err)
 	}
@@ -34,13 +28,9 @@ func HandleVideosAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(j))
 }
 
-// HandleVideosRandom -
-func HandleVideosRandom(w http.ResponseWriter, r *http.Request) {
-	rand.Seed(time.Now().UnixNano())
-
+// RandomVideo - Get a random playlist item from a random playlist
+func RandomVideo(w http.ResponseWriter, r *http.Request) {
 	item := youtube.GetRandomPlaylistItem()
-	// url = "https://www.youtube.com/watch?v=" + item.ContentDetails.VideoId
-	// date := item.ContentDetails.VideoPublishedAt
 
 	j, err := json.MarshalIndent(item, "", "  ")
 	if err != nil {
@@ -52,8 +42,8 @@ func HandleVideosRandom(w http.ResponseWriter, r *http.Request) {
 
 // Playlists
 
-// HandlePlaylistsAll -
-func HandlePlaylistsAll(w http.ResponseWriter, r *http.Request) {
+// AllPlaylists - Get all playlist responses
+func AllPlaylists(w http.ResponseWriter, r *http.Request) {
 	j, err := json.MarshalIndent(youtube.PlaylistResponses, "", "  ")
 	if err != nil {
 		log.Fatalf("Could not marshal data %v", err)
@@ -62,8 +52,8 @@ func HandlePlaylistsAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(j))
 }
 
-// HandlePlaylistsRandom -
-func HandlePlaylistsRandom(w http.ResponseWriter, r *http.Request) {
+// RandomPlaylist - Get a random playlist response
+func RandomPlaylist(w http.ResponseWriter, r *http.Request) {
 	randomPlaylist := youtube.GetRandomPlaylist()
 	j, err := json.MarshalIndent(randomPlaylist, "", "  ")
 	if err != nil {
@@ -74,8 +64,8 @@ func HandlePlaylistsRandom(w http.ResponseWriter, r *http.Request) {
 
 // Channels
 
-// HandleChannelsAll -
-func HandleChannelsAll(w http.ResponseWriter, r *http.Request) {
+// AllChannels - Get all youtube channel responses
+func AllChannels(w http.ResponseWriter, r *http.Request) {
 	j, err := json.MarshalIndent(youtube.ChannelResponses, "", "  ")
 	if err != nil {
 		log.Fatalf("Could not marshal data %v", err)
@@ -84,8 +74,8 @@ func HandleChannelsAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(j))
 }
 
-// HandleChannelsRandom -
-func HandleChannelsRandom(w http.ResponseWriter, r *http.Request) {
+// RandomChannel - Get a random channel from youtube responses
+func RandomChannel(w http.ResponseWriter, r *http.Request) {
 	randomChannel := youtube.GetRandomChannel()
 	j, err := json.MarshalIndent(randomChannel, "", "  ")
 	if err != nil {

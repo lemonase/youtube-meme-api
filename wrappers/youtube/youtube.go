@@ -112,6 +112,8 @@ func GetRandomPlaylistItem() *youtube.PlaylistItem {
 	randomPlaylist := GetRandomPlaylist()
 	id := randomPlaylist.Items[0].Id
 	videoCount := randomPlaylist.Items[0].ContentDetails.ItemCount
+
+	rand.Seed(time.Now().UnixNano())
 	randIndex := int64(rand.Intn(int(videoCount)))
 
 	res := GetPlaylistItemsResponseFromIDAtIndex(id, randIndex)
