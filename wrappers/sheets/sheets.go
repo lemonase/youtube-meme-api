@@ -19,7 +19,7 @@ import (
 const SheetID = "1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs"
 
 // Client - The authroized youtube service client (either with a key or a token)
-var Client = client.Sheets
+var Client = &client.Clients.Sheets
 
 // VideoRange -
 var VideoRange = "Sheet1!A2:A1000"
@@ -52,6 +52,14 @@ var VideoLength int
  * Fetch Functions
  */
 
+// FetchAllValues -
+func FetchAllValues() {
+	log.Println("::Fetching All Sheets::")
+	FetchChannelValues()
+	FetchPlaylistValues()
+	FetchVideoValues()
+}
+
 // FetchSheetValues - wrapper to SheetsAPI
 // Params - takes a sheetID for a spreadsheet, and a range of values to get
 // Returns - the length of the values and the values themselves
@@ -63,14 +71,6 @@ func FetchSheetValues(sheetID string, playlistRange string) (int, [][]interface{
 		log.Fatalf("No values on sheet %s in range %s!", sheetID, playlistRange)
 	}
 	return len(resp.Values), resp.Values
-}
-
-// FetchAllValues -
-func FetchAllValues() {
-	log.Println("::Fetching All Sheets::")
-	FetchChannelValues()
-	FetchPlaylistValues()
-	FetchVideoValues()
 }
 
 // FetchChannelValues -

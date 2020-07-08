@@ -101,6 +101,11 @@ github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORN
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/lemonase/youtube-meme-api v0.0.0-20200707184725-0661340f2158 h1:0MruAI3Wh+d02P39MKsUOXBeWJQr0F899Ka6IzmHr+A=
+github.com/lemonase/youtube-meme-api v0.0.0-20200707184725-0661340f2158/go.mod h1:NOz18/Y/bN2hKi0mmKGPPLOujSsCaiUW4qDbLsZ5q3M=
+github.com/lemonase/youtube-meme-api v0.0.0-20200708172216-ac7391e28ab6 h1:R0rYH1JLyE8Lc86u3JczFQD3NqP3x/QZD+3yl2Zdv3g=
+github.com/lemonase/youtube-meme-api/client v0.0.0-20200708172216-ac7391e28ab6 h1:TA6fO9SPhZA6hAbdWB+juR0X7WclI4uS/dGHgQYg+Vc=
+github.com/lemonase/youtube-meme-api/client v0.0.0-20200708172216-ac7391e28ab6/go.mod h1:OHeykemTSM8/2HoEO0oVR5+wMl8ULAPFsWmPIkygP6A=
+github.com/lemonase/youtube-meme-api/wrappers v0.0.0-20200707184725-0661340f2158/go.mod h1:lTt8kTj56g8liwg+uXkp8ajrxHzzIjdjJ2eTYgC1S5Y=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=

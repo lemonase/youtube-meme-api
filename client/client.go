@@ -8,45 +8,48 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/googleapi/transport"
+	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 	"google.golang.org/api/youtube/v3"
 )
 
-// YouTube -
-var YouTube *youtube.Service
+// Clients -
+type ServiceClients struct {
+	Sheets  sheets.Service
+	YouTube youtube.Service
+}
 
-// Sheets -
-var Sheets *sheets.Service
+var Clients ServiceClients
 
-// creds and token files for auth
-var credentialsFile string = "auth/secret/credentials.json"
-var tokenFile string = "auth/secret/token.json"
+var tokenFile string
 
-func InitClientsWithAPIKey(apiKey string) *sheets.Service {
-	httpClient := &http.Client{
-		Transport: &transport.APIKey{key: apiKey},
-	}
+func InitClientsWithAPIKey(apiKey string) {
+	sheetsCtx := context.Background()
+	youtubeCtx := context.Background()
 
-	sheetsClient, err := sheets.New(httpClient)
+	sheetsClient, err := sheets.NewService(sheetsCtx, option.WithAPIKey(apiKey), option.WithScopes(sheets.SpreadsheetsReadonlyScope))
 	if err != nil {
 		log.Fatalf("Could not get sheets client %v\n", err)
 	}
-	youtubeClient, err := youtube.New(httpClient)
+	youtubeClient, err := youtube.NewService(youtubeCtx, option.WithAPIKey(apiKey), option.WithScopes(youtube.YoutubeReadonlyScope))
 	if err != nil {
 		log.Fatalf("Could not get youtube client %v\n", err)
 	}
 
-	YouTube = youtube.New(httpClient)
-	Sheets = sheets.New(httpClient)
+	Clients.Sheets = *sheetsClient
+	Clients.YouTube = *youtubeClient
 }
 
 func InitClientsWithSecretJSONFile(filename string) {
-	Sheets = getSheetsClientOAuth(filename)
-	YouTube = getYoutubeClientOAuth(filename)
+	dir, _ := filepath.Split(filename)
+	tokenFile = filepath.Join(dir, "token.json")
+
+	Clients.Sheets = *getSheetsClientOAuth(filename)
+	Clients.YouTube = *getYoutubeClientOAuth(filename)
 }
 
 func getSheetsClientOAuth(credsFilename string) *sheets.Service {

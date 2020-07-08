@@ -3,13 +3,9 @@ module github.com/lemonase/youtube-meme-api/wrappers
 go 1.13
 
 require (
-	cloud.google.com/go v0.60.0 // indirect
-	go.opencensus.io v0.22.4 // indirect
+	github.com/lemonase/youtube-meme-api v0.0.0-20200707184725-0661340f2158
+	github.com/lemonase/youtube-meme-api/client v0.0.0-20200708172216-ac7391e28ab6
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
-	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/api v0.28.0
-	google.golang.org/genproto v0.0.0-20200702021140-07506425bd67 // indirect
-	google.golang.org/grpc v1.30.0 // indirect
 )
