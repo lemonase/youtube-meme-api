@@ -56,7 +56,7 @@ func InitServer() {
 
 // FetchInitResources - Calls sheets and youtube APIs for data
 func FetchInitResources() {
-	log.Printf("::Fetching initial data::\n")
+	log.Printf("::Fetching Initial Resources::\n")
 	sheets.FetchAllValues()
 	youtube.FetchAllListsFromSheet()
 }

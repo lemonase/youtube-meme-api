@@ -1,20 +1,14 @@
 package youtube
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
-	"net/http"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/lemonase/youtube-meme-api/client"
 	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
-	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/youtube/v3"
 )
 
@@ -24,12 +18,8 @@ import (
  * https://developers.google.com/youtube/v3/code_samples/go#search_by_keyword
  */
 
-// creds and token files for auth
-var credentialsFile string = "auth/youtube/credentials.json"
-var tokenFile string = "auth/youtube/token.json"
-
 // Client - youtube client for auth and API methods
-var Client = getYoutubeClient()
+var Client = client.YouTube
 
 // PageSize - the number of items that will be returned in a single API call
 var PageSize int64 = 50
@@ -295,90 +285,4 @@ func ChannelsListByUsername(username string) {
 		response.Items[0].Id,
 		response.Items[0].Snippet.Title,
 		response.Items[0].Statistics.ViewCount))
-}
-
-/*
- * Client Functions
- */
-
-// getYoutubeClient - reads a credentials file, calls a config and creates and
-// returns a youtube client
-func getYoutubeClient() *youtube.Service {
-	ctx := context.Background()
-
-	b, err := ioutil.ReadFile(credentialsFile)
-	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
-	}
-
-	config, err := google.ConfigFromJSON(b, youtube.YoutubeReadonlyScope)
-	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
-	}
-
-	client := getClient(ctx, config)
-	youtubeClient, err := youtube.New(client)
-	if err != nil {
-		log.Fatalf("Error obtaining client: %v\n", err.Error())
-	}
-
-	return youtubeClient
-}
-
-// getClient - takes http context, and oauth config type and returns a http
-// client with an auto-refreshing token
-func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
-	tok, err := tokenFromFile(tokenFile)
-	if err != nil {
-		tok = getTokenFromWeb(config)
-		saveToken(tokenFile, tok)
-	}
-	return config.Client(ctx, tok)
-}
-
-/*
- * Auth Functions
- */
-
-// getTokenFromWeb - default auth flow to get token
-func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
-	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	fmt.Printf("Go to the following link in your browser then type the "+
-		"authorization code: \n%v\n", authURL)
-
-	var code string
-	if _, err := fmt.Scan(&code); err != nil {
-		log.Fatalf("Unable to read authorization code %v", err)
-	}
-
-	tok, err := config.Exchange(oauth2.NoContext, code)
-	if err != nil {
-		log.Fatalf("Unable to retrieve token from web %v", err)
-	}
-	return tok
-}
-
-// tokenFromFile retrieves a Token from a given file path.
-// It returns the retrieved Token and any read error encountered.
-func tokenFromFile(file string) (*oauth2.Token, error) {
-	f, err := os.Open(file)
-	if err != nil {
-		return nil, err
-	}
-	t := &oauth2.Token{}
-	err = json.NewDecoder(f).Decode(t)
-	defer f.Close()
-	return t, err
-}
-
-// saveToken uses a file path to create a file and store the
-// token in it.
-func saveToken(file string, token *oauth2.Token) {
-	fmt.Printf("Saving credential file to: %s\n", file)
-	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
-	if err != nil {
-		log.Fatalf("Unable to cache oauth token: %v\n", err)
-	}
-	defer f.Close()
-	json.NewEncoder(f).Encode(token)
 }
