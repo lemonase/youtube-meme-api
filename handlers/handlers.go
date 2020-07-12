@@ -85,7 +85,7 @@ func RandomChannel(w http.ResponseWriter, r *http.Request) {
 }
 
 // Updates
-// TODO set up a function on the sheet that calls this endpoint when the sheet changes
+// TODO set up a function on the sheet that calls these endpoint when the sheet changes
 
 // UpdateAllValuesFromSheet -
 func UpdateAllValuesFromSheet(w http.ResponseWriter, r *http.Request) {

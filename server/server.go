@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"github.com/lemonase/youtube-meme-api/handlers"
-	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
-	"github.com/lemonase/youtube-meme-api/wrappers/youtube"
 )
 
 // InitServer - Sets all routes and initializes the server
@@ -41,6 +39,5 @@ func InitServer(port string) {
 // FetchInitResources - Calls sheets and youtube APIs for data
 func FetchInitResources() {
 	log.Printf("::Fetching Initial Resources::\n")
-	sheets.FetchAllValues()
-	youtube.FetchAllListsFromSheet()
+	handlers.UpdateAllValuesFromSheet()
 }

@@ -11,6 +11,8 @@ Additional video/playlist data is then retrieved from the YouTube Data API.
 
 The endpoints (so far) are:
 
+## HTTP Endpoints
+
 ## GET
 
 ### Random Endpoints
@@ -24,4 +26,3 @@ The endpoints (so far) are:
 - `/api/v1/all/videos` - Gets all videos
 - `/api/v1/all/playlists` - Gets all playlists
 - `/api/v1/all/channels` - Gets all channels
-

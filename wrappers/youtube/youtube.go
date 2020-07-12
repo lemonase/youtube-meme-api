@@ -19,7 +19,7 @@ import (
  */
 
 // Client - youtube client for auth and API methods
-var Client = &client.Clients.YouTube
+var Client = &client.Services.YouTube
 
 // PageSize - the number of items that will be returned in a single API call
 var PageSize int64 = 50

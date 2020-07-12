@@ -19,7 +19,7 @@ import (
 const SheetID = "1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs"
 
 // Client - The authroized youtube service client (either with a key or a token)
-var Client = &client.Clients.Sheets
+var Client = &client.Services.Sheets
 
 // VideoRange -
 var VideoRange = "Sheet1!A2:A1000"

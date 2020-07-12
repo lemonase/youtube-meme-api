@@ -17,13 +17,13 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-// Clients -
+// ServiceClients -
 type ServiceClients struct {
 	Sheets  sheets.Service
 	YouTube youtube.Service
 }
 
-var Clients ServiceClients
+var Services ServiceClients
 
 var tokenFile string
 
@@ -40,16 +40,16 @@ func InitClientsWithAPIKey(apiKey string) {
 		log.Fatalf("Could not get youtube client %v\n", err)
 	}
 
-	Clients.Sheets = *sheetsClient
-	Clients.YouTube = *youtubeClient
+	Services.Sheets = *sheetsClient
+	Services.YouTube = *youtubeClient
 }
 
 func InitClientsWithSecretJSONFile(filename string) {
 	dir, _ := filepath.Split(filename)
 	tokenFile = filepath.Join(dir, "token.json")
 
-	Clients.Sheets = *getSheetsClientOAuth(filename)
-	Clients.YouTube = *getYoutubeClientOAuth(filename)
+	Services.Sheets = *getSheetsClientOAuth(filename)
+	Services.YouTube = *getYoutubeClientOAuth(filename)
 }
 
 func getSheetsClientOAuth(credsFilename string) *sheets.Service {
