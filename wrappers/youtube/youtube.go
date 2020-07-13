@@ -36,9 +36,10 @@ var PlaylistItemResponses []*youtube.PlaylistItemListResponse
 // ChannelResponses - holds responses from channels
 var ChannelResponses []*youtube.ChannelListResponse
 
-/*
- * Fetching
- */
+// SearchResponses - holds response from a search call
+var SearchResponses []*youtube.SearchListResponse
+
+// Fetching
 
 // FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
 func FetchAllListsFromSheet() {
@@ -58,7 +59,7 @@ func FetchAllChannels() {
 		uploadPl := GetPlaylistResponseFromID(channelRes.Items[0].ContentDetails.RelatedPlaylists.Uploads)
 		PlaylistResponses = append(PlaylistResponses, uploadPl)
 	}
-	log.Printf("Number of Channels: %d\n", len(ChannelResponses))
+	log.Printf("	Number of Channels: %d\n", len(ChannelResponses))
 }
 
 // FetchAllPlaylists - Fetches youtube data for all playlist values on the sheet
@@ -67,7 +68,7 @@ func FetchAllPlaylists() {
 		playlistURL := string(url[0].(string))
 		PlaylistResponses = append(PlaylistResponses, GetPlaylistRepsonseFromURL(playlistURL))
 	}
-	log.Printf("Number of Playlists: %d\n", len(PlaylistResponses))
+	log.Printf("	Number of Playlists: %d\n", len(PlaylistResponses))
 }
 
 // FetchAllVideos - Fetches youtube data for all the videos on the sheet
@@ -76,12 +77,10 @@ func FetchAllVideos() {
 		videoURL := string(url[0].(string))
 		VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
 	}
-	log.Printf("Number of Videos: %d\n", len(VideoResponses))
+	log.Printf("	Number of Videos: %d\n", len(VideoResponses))
 }
 
-/*
- * Randomizers
- */
+// Randomizers
 
 // GetRandomVideo - Returns a random video response
 func GetRandomVideo() *youtube.VideoListResponse {
@@ -117,9 +116,7 @@ func GetRandomChannel() *youtube.ChannelListResponse {
 	return ChannelResponses[randIndex]
 }
 
-/*
- * Video Utils
- */
+// Video Utils
 
 // GetVideoIDFromURL - Get the video id from a given url
 func GetVideoIDFromURL(url string) string {
@@ -151,9 +148,7 @@ func GetVideoResponseFromURL(url string) *youtube.VideoListResponse {
 	return GetVideoResponseFromID(GetVideoIDFromURL(url))
 }
 
-/*
- * Playlist Utils
- */
+// Playlist Utils
 
 // GetPlaylistIDFromURL - Takes a URL string and gets everything to the right of playlist param
 func GetPlaylistIDFromURL(url string) string {
@@ -221,9 +216,7 @@ func GetPlaylistItemsResponseFromURLAtIndex(url string, videoIndex int64) *youtu
 	return GetPlaylistItemsResponseFromIDAtIndex(GetPlaylistIDFromURL(url), videoIndex)
 }
 
-/*
- * Channels
- */
+// Channels
 
 // GetChannelIDFromURL - Takes a string, splits it on "/" and gets the last field
 func GetChannelIDFromURL(url string) string {

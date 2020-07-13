@@ -13,7 +13,23 @@ import (
 // CatchAll -
 func CatchAll(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprintf(w, "URL Not Found")
+	fmt.Fprintln(w, "404: URL Not Found")
+
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "Endpoints are: ")
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "/api/v1/random/video")
+	fmt.Fprintln(w, "/api/v1/random/playlist")
+	fmt.Fprintln(w, "/api/v1/random/channel")
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "/api/v1/all/videos")
+	fmt.Fprintln(w, "/api/v1/all/playlists")
+	fmt.Fprintln(w, "/api/v1/all/channels")
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "/api/v1/update/all")
+	fmt.Fprintln(w, "/api/v1/update/videos")
+	fmt.Fprintln(w, "/api/v1/update/playlists")
+	fmt.Fprintln(w, "/api/v1/update/channels")
 }
 
 // Videos
@@ -87,14 +103,19 @@ func RandomChannel(w http.ResponseWriter, r *http.Request) {
 // Updates
 // TODO set up a function on the sheet that calls these endpoint when the sheet changes
 
-// UpdateAllValuesFromSheet -
-func UpdateAllValuesFromSheet(w http.ResponseWriter, r *http.Request) {
+// FetchAllValuesFromSheet -
+func FetchAllValuesFromSheet() {
 	sheets.FetchAllValues()
 
 	youtube.ChannelResponses = nil
 	youtube.PlaylistResponses = nil
 	youtube.VideoResponses = nil
 	youtube.FetchAllListsFromSheet()
+}
+
+// UpdateAllValuesFromSheet -
+func UpdateAllValuesFromSheet(w http.ResponseWriter, r *http.Request) {
+	FetchAllValuesFromSheet()
 }
 
 // UpdateAllChannelsFromSheet -
