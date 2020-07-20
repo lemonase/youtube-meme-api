@@ -45,8 +45,8 @@ var SearchResponses []*youtube.SearchListResponse
 func FetchAllListsFromSheet() {
 	log.Println("::Fetching Youtube Data::")
 	FetchAllChannels()
-	FetchAllVideos()
 	FetchAllPlaylists()
+	FetchAllVideos()
 }
 
 // FetchAllChannels - Fetches youtube data for all channel values on the sheet
@@ -59,7 +59,7 @@ func FetchAllChannels() {
 		uploadPl := GetPlaylistResponseFromID(channelRes.Items[0].ContentDetails.RelatedPlaylists.Uploads)
 		PlaylistResponses = append(PlaylistResponses, uploadPl)
 	}
-	log.Printf("	Number of Channels: %d\n", len(ChannelResponses))
+	log.Printf("	Number of Channel Playlists: %d\n", len(ChannelResponses))
 }
 
 // FetchAllPlaylists - Fetches youtube data for all playlist values on the sheet
@@ -68,7 +68,7 @@ func FetchAllPlaylists() {
 		playlistURL := string(url[0].(string))
 		PlaylistResponses = append(PlaylistResponses, GetPlaylistRepsonseFromURL(playlistURL))
 	}
-	log.Printf("	Number of Playlists: %d\n", len(PlaylistResponses))
+	log.Printf("	Number of Regular Playlists: %d\n", len(PlaylistResponses))
 }
 
 // FetchAllVideos - Fetches youtube data for all the videos on the sheet
@@ -77,7 +77,16 @@ func FetchAllVideos() {
 		videoURL := string(url[0].(string))
 		VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
 	}
-	log.Printf("	Number of Videos: %d\n", len(VideoResponses))
+
+	// 	if len(PlaylistResponses) < 1 {
+	// 		FetchAllPlaylists()
+	// 	}
+	// 	for _, pl := range PlaylistResponses {
+	// 		plVideos := GetAllVideoItemsFromPlaylistId(pl.Items[0].Id)
+	// 		VideoResponses = append(VideoResponses, plVideos...)
+	// 	}
+
+	log.Printf("	Number of Total Videos: %d\n", len(VideoResponses))
 }
 
 // Randomizers
@@ -187,6 +196,43 @@ func GetPlaylistRepsonseFromURL(url string) *youtube.PlaylistListResponse {
 
 // Playlist *Items* (different from playlist response)
 
+// TODO these playlist API calls can be very expensive (in quota terms)
+// it would be better to just get video urls from PlaylistItemsList
+// instead of doing 2x+ the amount of api calls
+
+// GetAllVideoItemsFromPlaylistId - Retruns a list of videos from playlist
+func GetAllVideoItemsFromPlaylistId(id string) []*youtube.VideoListResponse {
+	var playlistVideos []*youtube.VideoListResponse
+
+	part := []string{"contentDetails"}
+	Call := Client.PlaylistItems.List(part)
+
+	Call = Call.PlaylistId(id)
+	Call = Call.MaxResults(PageSize)
+
+	res, err := Call.Do()
+	if err != nil {
+		log.Fatalf("Error fetching playlist %v\n", err)
+	}
+	if len(res.Items) < 1 {
+		log.Fatalf("No items in playlist %s\n", id)
+	}
+
+	for pageIndex := int64(0); pageIndex <= int64(len(res.Items)); pageIndex += PageSize {
+		res, err := Call.Do()
+		if err != nil {
+			log.Fatalf("Error fetching playlist %v\n", err)
+		}
+		for _, item := range res.Items {
+			playlistVideos = append(playlistVideos, GetVideoResponseFromID(item.ContentDetails.VideoId))
+		}
+
+		Call.PageToken(res.NextPageToken)
+	}
+
+	return playlistVideos
+}
+
 // GetPlaylistItemsResponseFromIDAtIndex - Takes an id and position of a video in a playlist and returns a response
 func GetPlaylistItemsResponseFromIDAtIndex(id string, videoIndex int64) *youtube.PlaylistItemListResponse {
 	var correctPageRes *youtube.PlaylistItemListResponse
@@ -206,6 +252,10 @@ func GetPlaylistItemsResponseFromIDAtIndex(id string, videoIndex int64) *youtube
 		}
 		correctPageRes = res
 		Call.PageToken(res.NextPageToken)
+	}
+
+	if len(correctPageRes.Items) < 1 {
+		log.Fatalf("No items returned in response: Check playlist https:/www.yotube.com/playlist?list=%v at index %v", id, videoIndex)
 	}
 
 	return correctPageRes

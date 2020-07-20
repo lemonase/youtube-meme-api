@@ -76,19 +76,19 @@ func FetchSheetValues(sheetID string, playlistRange string) (int, [][]interface{
 // FetchChannelValues -
 func FetchChannelValues() {
 	ChannelLength, ChannelValues = FetchSheetValues(SheetID, ChannelRange)
-	log.Printf("	Number of Channels: %d\n", ChannelLength)
+	log.Printf("	Number of Channel Values: %d\n", ChannelLength)
 }
 
 // FetchPlaylistValues -
 func FetchPlaylistValues() {
 	PlaylistLength, PlaylistValues = FetchSheetValues(SheetID, PlaylistRange)
-	log.Printf("	Number of Playlists: %d\n", PlaylistLength)
+	log.Printf("	Number of Playlist Values: %d\n", PlaylistLength)
 }
 
 // FetchVideoValues -
 func FetchVideoValues() {
 	VideoLength, VideoValues = FetchSheetValues(SheetID, VideoRange)
-	log.Printf("	Number of Videos: %d\n", VideoLength)
+	log.Printf("	Number of Video Values: %d\n", VideoLength)
 }
 
 /*
