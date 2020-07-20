@@ -26,3 +26,23 @@ The endpoints (so far) are:
 - `/api/v1/all/videos` - Gets all videos
 - `/api/v1/all/playlists` - Gets all playlists
 - `/api/v1/all/channels` - Gets all channels
+
+## Client usage
+
+### Video
+
+```shell
+$ xdg-open "https://www.youtube.com/watch?v=$(curl -sS localhost:8000/api/v1/random/video | jq .contentDetails.videoId | sed 's/"//g')"
+```
+
+### Playlist
+
+```shell
+xdg-open "https://www.youtube.com/playlist?list=$(curl -sS localhost:8000/api/v1/random/playlist | jq .items[0].id | sed 's/"//g')"
+```
+
+### Channel
+
+```shell
+$ xdg-open "https://www.youtube.com/channel/$(curl -sS localhost:8000/api/v1/random/channel | jq .items[0].id | sed 's/"//g')"
+```

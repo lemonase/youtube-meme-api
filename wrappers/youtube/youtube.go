@@ -44,9 +44,9 @@ var SearchResponses []*youtube.SearchListResponse
 // FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
 func FetchAllListsFromSheet() {
 	log.Println("::Fetching Youtube Data::")
+	FetchAllChannels()
 	FetchAllVideos()
 	FetchAllPlaylists()
-	FetchAllChannels()
 }
 
 // FetchAllChannels - Fetches youtube data for all channel values on the sheet
