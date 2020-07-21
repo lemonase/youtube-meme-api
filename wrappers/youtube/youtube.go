@@ -24,6 +24,9 @@ var Client = &client.Services.YouTube
 // PageSize - the number of items that will be returned in a single API call
 var PageSize int64 = 50
 
+// TODO write responses to one or more JSON files
+// instead of storing in memory.
+
 // VideoResponses - holds responses from videos
 var VideoResponses []*youtube.VideoListResponse
 
@@ -43,7 +46,7 @@ var SearchResponses []*youtube.SearchListResponse
 
 // FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
 func FetchAllListsFromSheet() {
-	log.Println("::Fetching Youtube Data::")
+	log.Println(":: Fetching Youtube Data ::")
 	FetchAllChannels()
 	FetchAllPlaylists()
 	FetchAllVideos()
@@ -78,6 +81,7 @@ func FetchAllVideos() {
 		VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
 	}
 
+	// FIXME: Will run into quota issues quick
 	// 	if len(PlaylistResponses) < 1 {
 	// 		FetchAllPlaylists()
 	// 	}
