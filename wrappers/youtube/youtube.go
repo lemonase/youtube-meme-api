@@ -44,6 +44,7 @@ var playlistJSONFile = filepath.Join(dataBaseDir, "playlist.json")
 // PlaylistItemResponses - holds responses for items of a playlist
 var PlaylistItemResponses []*youtube.PlaylistItemListResponse
 var playlistItemJSONFile = filepath.Join(dataBaseDir, "playlist_item.json")
+var playlistItemCount int
 
 // ChannelResponses - holds responses from channels
 var ChannelResponses []*youtube.ChannelListResponse
@@ -78,6 +79,7 @@ func FetchAllListsFromSheet() {
 		}
 	}
 
+	// Channels
 	if fileExists(channelJSONFile) {
 		log.Printf("	Fetching Channel Info From %s", channelJSONFile)
 		data, err := ioutil.ReadFile(channelJSONFile)
@@ -100,7 +102,9 @@ func FetchAllListsFromSheet() {
 			log.Fatal(err)
 		}
 	}
+	log.Printf("		Number of Channel Playlists: %d\n", len(ChannelResponses))
 
+	// Playlists
 	if fileExists(playlistJSONFile) {
 		log.Printf("	Fetching Playlist Info From %s\n", playlistJSONFile)
 		data, err := ioutil.ReadFile(playlistJSONFile)
@@ -123,7 +127,9 @@ func FetchAllListsFromSheet() {
 			log.Fatal(err)
 		}
 	}
+	log.Printf("		Number of Playlists: %d\n", len(PlaylistResponses))
 
+	// Playlist Items
 	if fileExists(playlistItemJSONFile) {
 		log.Printf("	Fetching Playlist Items From %s\n", playlistItemJSONFile)
 		data, err := ioutil.ReadFile(playlistItemJSONFile)
@@ -146,7 +152,13 @@ func FetchAllListsFromSheet() {
 			log.Fatal(err)
 		}
 	}
+	log.Printf("		Number of Playlist Pages: %d\n", len(PlaylistItemResponses))
+	for _, pl := range PlaylistItemResponses {
+		playlistItemCount += len(pl.Items)
+	}
+	log.Printf("		Number of Playlist Items: %d\n", playlistItemCount)
 
+	// Videos
 	if fileExists(videoJSONFile) {
 		log.Printf("	Fetching Videos From %s\n", videoJSONFile)
 		data, err := ioutil.ReadFile(videoJSONFile)
@@ -169,6 +181,7 @@ func FetchAllListsFromSheet() {
 			log.Fatal(err)
 		}
 	}
+	log.Printf("		Number of Videos: %d\n", len(VideoResponses))
 
 }
 
@@ -182,7 +195,6 @@ func FetchAllChannels() {
 		uploadPl := GetPlaylistResponseFromID(channelRes.Items[0].ContentDetails.RelatedPlaylists.Uploads)
 		PlaylistResponses = append(PlaylistResponses, uploadPl)
 	}
-	log.Printf("	Number of Channel Playlists: %d\n", len(ChannelResponses))
 }
 
 // FetchAllPlaylists - Fetches youtube data for all playlist values on the sheet
@@ -191,16 +203,14 @@ func FetchAllPlaylists() {
 		playlistURL := string(url[0].(string))
 		PlaylistResponses = append(PlaylistResponses, GetPlaylistRepsonseFromURL(playlistURL))
 	}
-	log.Printf("	Number of Playlists: %d\n", len(PlaylistResponses))
 }
 
 // FetchAllPlaylistItems - Fetch all playlist items from playlist responses
 func FetchAllPlaylistItems() {
 	for _, pl := range PlaylistResponses {
 		PlaylistItemResponses = append(PlaylistItemResponses, GetAllPlaylistItemResponsesFromPlaylistID(pl.Items[0].Id)...)
+		playlistItemCount += len(pl.Items)
 	}
-
-	log.Printf("	Number of Total Playlist Pages: %d\n", len(PlaylistItemResponses))
 }
 
 // FetchAllVideos - Fetches youtube data for all the videos on the sheet
@@ -209,8 +219,6 @@ func FetchAllVideos() {
 		videoURL := string(url[0].(string))
 		VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
 	}
-
-	log.Printf("	Number of Total Videos: %d\n", len(VideoResponses))
 }
 
 // Randomizers

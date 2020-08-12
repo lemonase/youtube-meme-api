@@ -54,7 +54,9 @@ var VideoLength int
 
 // FetchAllValues -
 func FetchAllValues() {
-	log.Println(":: Fetching Values From Google Sheet ::")
+	log.Printf(":: Fetching Values From Google Sheet ::\n")
+	log.Printf("https://docs.google.com/spreadsheets/d/%s\n", SheetID)
+
 	FetchChannelValues()
 	FetchPlaylistValues()
 	FetchVideoValues()
@@ -76,19 +78,22 @@ func FetchSheetValues(sheetID string, playlistRange string) (int, [][]interface{
 // FetchChannelValues -
 func FetchChannelValues() {
 	ChannelLength, ChannelValues = FetchSheetValues(SheetID, ChannelRange)
-	log.Printf("	Number of Channel URLs: %d\n", ChannelLength)
+	log.Printf("	Fetching Channels From Range %s\n", ChannelRange)
+	log.Printf("		Number of Channel URLs: %d\n", ChannelLength)
 }
 
 // FetchPlaylistValues -
 func FetchPlaylistValues() {
 	PlaylistLength, PlaylistValues = FetchSheetValues(SheetID, PlaylistRange)
-	log.Printf("	Number of Playlist URLs: %d\n", PlaylistLength)
+	log.Printf("	Fetching Playlists From Range %s\n", PlaylistRange)
+	log.Printf("		Number of Playlist URLs: %d\n", PlaylistLength)
 }
 
 // FetchVideoValues -
 func FetchVideoValues() {
 	VideoLength, VideoValues = FetchSheetValues(SheetID, VideoRange)
-	log.Printf("	Number of Video URLs: %d\n", VideoLength)
+	log.Printf("	Fetching Videos From Range %s\n", VideoRange)
+	log.Printf("		Number of Video URLs: %d\n", VideoLength)
 }
 
 /*
