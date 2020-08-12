@@ -22,14 +22,14 @@ func CatchAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "/api/v1/random/playlist")
 	fmt.Fprintln(w, "/api/v1/random/channel")
 	fmt.Fprintln(w, "")
-	fmt.Fprintln(w, "/api/v1/all/videos")
-	fmt.Fprintln(w, "/api/v1/all/playlists")
-	fmt.Fprintln(w, "/api/v1/all/channels")
+	fmt.Fprintln(w, "/api/v1/all/video")
+	fmt.Fprintln(w, "/api/v1/all/playlist")
+	fmt.Fprintln(w, "/api/v1/all/channel")
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "/api/v1/update/all")
-	fmt.Fprintln(w, "/api/v1/update/videos")
-	fmt.Fprintln(w, "/api/v1/update/playlists")
-	fmt.Fprintln(w, "/api/v1/update/channels")
+	fmt.Fprintln(w, "/api/v1/update/video")
+	fmt.Fprintln(w, "/api/v1/update/playlist")
+	fmt.Fprintln(w, "/api/v1/update/channel")
 }
 
 // Videos
@@ -46,7 +46,7 @@ func AllVideos(w http.ResponseWriter, r *http.Request) {
 
 // RandomVideo - Get a random playlist item from a random playlist
 func RandomVideo(w http.ResponseWriter, r *http.Request) {
-	item := youtube.GetRandomPlaylistItem()
+	item := youtube.GetRandomVideo()
 
 	j, err := json.MarshalIndent(item, "", "  ")
 	if err != nil {
@@ -68,10 +68,30 @@ func AllPlaylists(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(j))
 }
 
+// AllPlaylistsWithItems - Get all playlist responses
+func AllPlaylistsWithItems(w http.ResponseWriter, r *http.Request) {
+	j, err := json.MarshalIndent(youtube.PlaylistItemResponses, "", "  ")
+	if err != nil {
+		log.Fatalf("Could not marshal data %v", err)
+	}
+
+	fmt.Fprintf(w, string(j))
+}
+
 // RandomPlaylist - Get a random playlist response
 func RandomPlaylist(w http.ResponseWriter, r *http.Request) {
 	randomPlaylist := youtube.GetRandomPlaylist()
 	j, err := json.MarshalIndent(randomPlaylist, "", "  ")
+	if err != nil {
+		log.Fatalf("Could not unmarshal %v", err)
+	}
+	fmt.Fprintf(w, string(j))
+}
+
+// RandomPlaylistItem - Get a random playlist response
+func RandomPlaylistItem(w http.ResponseWriter, r *http.Request) {
+	item := youtube.GetRandomPlaylistItem()
+	j, err := json.MarshalIndent(item, "", "  ")
 	if err != nil {
 		log.Fatalf("Could not unmarshal %v", err)
 	}

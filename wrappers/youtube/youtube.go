@@ -1,9 +1,13 @@
 package youtube
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -27,29 +31,142 @@ var PageSize int64 = 50
 // TODO write responses to one or more JSON files
 // instead of storing in memory.
 
+var dataBaseDir = "data"
+
 // VideoResponses - holds responses from videos
 var VideoResponses []*youtube.VideoListResponse
+var videoJSONFile = filepath.Join(dataBaseDir, "video.json")
 
 // PlaylistResponses - holds responses from playlists
 var PlaylistResponses []*youtube.PlaylistListResponse
+var playlistJSONFile = filepath.Join(dataBaseDir, "playlist.json")
 
 // PlaylistItemResponses - holds responses for items of a playlist
 var PlaylistItemResponses []*youtube.PlaylistItemListResponse
+var playlistItemJSONFile = filepath.Join(dataBaseDir, "playlist_item.json")
 
 // ChannelResponses - holds responses from channels
 var ChannelResponses []*youtube.ChannelListResponse
+var channelJSONFile = filepath.Join(dataBaseDir, "channel.json")
 
 // SearchResponses - holds response from a search call
 var SearchResponses []*youtube.SearchListResponse
+var searchJSONFile = filepath.Join(dataBaseDir, "search.json")
+
+// Files
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
 
 // Fetching
 
 // FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
 func FetchAllListsFromSheet() {
-	log.Println(":: Fetching Youtube Data ::")
-	FetchAllChannels()
-	FetchAllPlaylists()
-	FetchAllVideos()
+	// Create data directory
+	_, statErr := os.Stat(dataBaseDir)
+	if statErr != nil {
+		fErr := os.Mkdir(dataBaseDir, 0644)
+		if fErr != nil {
+			log.Fatal(fErr)
+		}
+	}
+
+	if fileExists(channelJSONFile) {
+		data, err := ioutil.ReadFile(channelJSONFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = json.Unmarshal(data, &ChannelResponses)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("	Fetching Channel Info From Disk")
+	} else {
+		FetchAllChannels()
+		j, err := json.Marshal(ChannelResponses)
+		if err != nil {
+			log.Fatalf("Error marshalling json")
+		}
+		err = ioutil.WriteFile(channelJSONFile, j, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("	Fetching Channel Info From API")
+	}
+
+	if fileExists(playlistJSONFile) {
+		data, err := ioutil.ReadFile(playlistJSONFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = json.Unmarshal(data, &PlaylistResponses)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("	Fetching Playlist Info From Disk")
+	} else {
+		FetchAllPlaylists()
+		j, err := json.Marshal(PlaylistResponses)
+		if err != nil {
+			log.Fatalf("Error marshalling json")
+		}
+		err = ioutil.WriteFile(playlistJSONFile, j, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("	Fetching Playlist Info From API")
+	}
+
+	if fileExists(playlistItemJSONFile) {
+		data, err := ioutil.ReadFile(playlistItemJSONFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = json.Unmarshal(data, &PlaylistItemResponses)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("	Fetching Playlist Items From Disk")
+	} else {
+		FetchAllPlaylistItems()
+		j, err := json.Marshal(PlaylistItemResponses)
+		if err != nil {
+			log.Fatalf("Error marshalling json")
+		}
+		err = ioutil.WriteFile(playlistItemJSONFile, j, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("	Fetching Playlist Items From API")
+	}
+
+	if fileExists(videoJSONFile) {
+		data, err := ioutil.ReadFile(videoJSONFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = json.Unmarshal(data, &VideoResponses)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("	Fetching Videos From Disk")
+	} else {
+		FetchAllVideos()
+		j, err := json.Marshal(VideoResponses)
+		if err != nil {
+			log.Fatalf("Error marshalling json")
+		}
+		err = ioutil.WriteFile(videoJSONFile, j, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("	Fetching Videos From API")
+	}
 }
 
 // FetchAllChannels - Fetches youtube data for all channel values on the sheet
@@ -71,7 +188,16 @@ func FetchAllPlaylists() {
 		playlistURL := string(url[0].(string))
 		PlaylistResponses = append(PlaylistResponses, GetPlaylistRepsonseFromURL(playlistURL))
 	}
-	log.Printf("	Number of Regular Playlists: %d\n", len(PlaylistResponses))
+	log.Printf("	Number of Playlists: %d\n", len(PlaylistResponses))
+}
+
+// FetchAllPlaylistItems - Fetch all playlist items from playlist responses
+func FetchAllPlaylistItems() {
+	for _, pl := range PlaylistResponses {
+		PlaylistItemResponses = append(PlaylistItemResponses, GetAllPlaylistItemResponsesFromPlaylistID(pl.Items[0].Id)...)
+	}
+
+	log.Printf("	Number of Total Playlist Pages: %d\n", len(PlaylistItemResponses))
 }
 
 // FetchAllVideos - Fetches youtube data for all the videos on the sheet
@@ -80,15 +206,6 @@ func FetchAllVideos() {
 		videoURL := string(url[0].(string))
 		VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
 	}
-
-	// FIXME: Will run into quota issues quick
-	// 	if len(PlaylistResponses) < 1 {
-	// 		FetchAllPlaylists()
-	// 	}
-	// 	for _, pl := range PlaylistResponses {
-	// 		plVideos := GetAllVideoItemsFromPlaylistId(pl.Items[0].Id)
-	// 		VideoResponses = append(VideoResponses, plVideos...)
-	// 	}
 
 	log.Printf("	Number of Total Videos: %d\n", len(VideoResponses))
 }
@@ -111,15 +228,16 @@ func GetRandomPlaylist() *youtube.PlaylistListResponse {
 
 // GetRandomPlaylistItem - Returns a random playlist video response
 func GetRandomPlaylistItem() *youtube.PlaylistItem {
-	randomPlaylist := GetRandomPlaylist()
-	id := randomPlaylist.Items[0].Id
-	videoCount := randomPlaylist.Items[0].ContentDetails.ItemCount
-
+	// randomPlaylist := GetRandomPlaylist()
+	// id := randomPlaylist.Items[0].Id
+	// videoCount := randomPlaylist.Items[0].ContentDetails.ItemCount
 	rand.Seed(time.Now().UnixNano())
-	randIndex := int64(rand.Intn(int(videoCount)))
+	randIndex := int64(rand.Intn(int(len(PlaylistItemResponses))))
 
-	res := GetPlaylistItemsResponseFromIDAtIndex(id, randIndex)
-	return res.Items[randIndex%PageSize]
+	randPl := PlaylistItemResponses[randIndex]
+	item := randPl.Items[rand.Intn(len(randPl.Items))]
+
+	return item
 }
 
 // GetRandomChannel - Returns a random playlist channel response
@@ -198,14 +316,8 @@ func GetPlaylistRepsonseFromURL(url string) *youtube.PlaylistListResponse {
 	return GetPlaylistResponseFromID(GetPlaylistIDFromURL(url))
 }
 
-// Playlist *Items* (different from playlist response)
-
-// TODO these playlist API calls can be very expensive (in quota terms)
-// it would be better to just get video urls from PlaylistItemsList
-// instead of doing 2x+ the amount of api calls
-
-// GetAllVideoItemsFromPlaylistId - Retruns a list of videos from playlist
-func GetAllVideoItemsFromPlaylistId(id string) []*youtube.VideoListResponse {
+// GetAllVideoItemsFromPlaylistID - Retruns a list of videos from playlist
+func GetAllVideoItemsFromPlaylistID(id string) []*youtube.VideoListResponse {
 	var playlistVideos []*youtube.VideoListResponse
 
 	part := []string{"contentDetails"}
@@ -237,11 +349,40 @@ func GetAllVideoItemsFromPlaylistId(id string) []*youtube.VideoListResponse {
 	return playlistVideos
 }
 
+// GetAllPlaylistItemResponsesFromPlaylistID - Appends all playlist item responses from an ID to the main list
+func GetAllPlaylistItemResponsesFromPlaylistID(id string) []*youtube.PlaylistItemListResponse {
+	var playlistItemResponses []*youtube.PlaylistItemListResponse
+
+	part := []string{"contentDetails"}
+	Call := Client.PlaylistItems.List(part)
+
+	Call = Call.PlaylistId(id)
+	Call = Call.MaxResults(PageSize)
+
+	res, err := Call.Do()
+	if err != nil {
+		log.Fatalf("Error fetching playlist %v\n", err)
+	}
+	if len(res.Items) < 1 {
+		log.Fatalf("No items in playlist %s\n", id)
+	}
+
+	for pageIndex := int64(0); pageIndex <= int64(len(res.Items)); pageIndex += PageSize {
+		res, err := Call.Do()
+		if err != nil {
+			log.Fatalf("Error fetching playlist %v\n", err)
+		}
+		playlistItemResponses = append(playlistItemResponses, res)
+	}
+
+	return playlistItemResponses
+}
+
 // GetPlaylistItemsResponseFromIDAtIndex - Takes an id and position of a video in a playlist and returns a response
 func GetPlaylistItemsResponseFromIDAtIndex(id string, videoIndex int64) *youtube.PlaylistItemListResponse {
 	var correctPageRes *youtube.PlaylistItemListResponse
 
-	part := []string{"snippet,contentDetails"}
+	part := []string{"contentDetails"}
 	Call := Client.PlaylistItems.List(part)
 
 	Call = Call.PlaylistId(id)

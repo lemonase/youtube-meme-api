@@ -18,18 +18,20 @@ func InitServer(port string) {
 	// random
 	mux.HandleFunc("/api/v1/random/video", handlers.RandomVideo)
 	mux.HandleFunc("/api/v1/random/playlist", handlers.RandomPlaylist)
+	mux.HandleFunc("/api/v1/random/playlist/item", handlers.RandomPlaylistItem)
 	mux.HandleFunc("/api/v1/random/channel", handlers.RandomChannel)
 
 	// all
-	mux.HandleFunc("/api/v1/all/videos", handlers.AllVideos)
-	mux.HandleFunc("/api/v1/all/playlists", handlers.AllPlaylists)
-	mux.HandleFunc("/api/v1/all/channels", handlers.AllChannels)
+	mux.HandleFunc("/api/v1/all/video", handlers.AllVideos)
+	mux.HandleFunc("/api/v1/all/playlist", handlers.AllPlaylists)
+	mux.HandleFunc("/api/v1/all/playlist/item", handlers.AllPlaylistsWithItems)
+	mux.HandleFunc("/api/v1/all/channel", handlers.AllChannels)
 
 	// updates
 	mux.HandleFunc("/api/v1/update/all", handlers.UpdateAllValuesFromSheet)
-	mux.HandleFunc("/api/v1/update/videos", handlers.UpdateAllVideosFromSheet)
-	mux.HandleFunc("/api/v1/update/playlists", handlers.UpdateAllPlaylistsFromSheet)
-	mux.HandleFunc("/api/v1/update/channels", handlers.UpdateAllChannelsFromSheet)
+	mux.HandleFunc("/api/v1/update/video", handlers.UpdateAllVideosFromSheet)
+	mux.HandleFunc("/api/v1/update/playlist", handlers.UpdateAllPlaylistsFromSheet)
+	mux.HandleFunc("/api/v1/update/channel", handlers.UpdateAllChannelsFromSheet)
 
 	server := http.Server{Addr: port, Handler: mux}
 	log.Printf("Server listenting on *%s", port)
@@ -38,6 +40,6 @@ func InitServer(port string) {
 
 // FetchInitResources - Calls sheets and youtube APIs for data
 func FetchInitResources() {
-	log.Printf("::Fetching Initial Resources::\n")
+	log.Printf("::Fetching Values From Google Sheet::\n")
 	handlers.FetchAllValuesFromSheet()
 }

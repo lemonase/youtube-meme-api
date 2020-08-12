@@ -23,9 +23,9 @@ The endpoints (so far) are:
 
 ### Aggregate Endpoints
 
-- `/api/v1/all/videos` - Gets all videos
-- `/api/v1/all/playlists` - Gets all playlists
-- `/api/v1/all/channels` - Gets all channels
+- `/api/v1/all/video` - Gets all videos
+- `/api/v1/all/playlist` - Gets all playlists
+- `/api/v1/all/channel` - Gets all channels
 
 ## Client usage
 
