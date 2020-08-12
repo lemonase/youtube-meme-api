@@ -40,6 +40,5 @@ func InitServer(port string) {
 
 // FetchInitResources - Calls sheets and youtube APIs for data
 func FetchInitResources() {
-	log.Printf("::Fetching Values From Google Sheet::\n")
 	handlers.FetchAllValuesFromSheet()
 }

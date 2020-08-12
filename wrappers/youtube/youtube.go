@@ -67,6 +67,8 @@ func fileExists(filename string) bool {
 
 // FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
 func FetchAllListsFromSheet() {
+	log.Println(":: Fetching YouTube Data ::")
+
 	// Create data directory
 	_, statErr := os.Stat(dataBaseDir)
 	if statErr != nil {
@@ -77,6 +79,7 @@ func FetchAllListsFromSheet() {
 	}
 
 	if fileExists(channelJSONFile) {
+		log.Printf("	Fetching Channel Info From %s", channelJSONFile)
 		data, err := ioutil.ReadFile(channelJSONFile)
 		if err != nil {
 			log.Fatal(err)
@@ -85,8 +88,8 @@ func FetchAllListsFromSheet() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("	Fetching Channel Info From Disk")
 	} else {
+		log.Printf("	Fetching Channel Info From API\n")
 		FetchAllChannels()
 		j, err := json.Marshal(ChannelResponses)
 		if err != nil {
@@ -96,10 +99,10 @@ func FetchAllListsFromSheet() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("	Fetching Channel Info From API")
 	}
 
 	if fileExists(playlistJSONFile) {
+		log.Printf("	Fetching Playlist Info From %s\n", playlistJSONFile)
 		data, err := ioutil.ReadFile(playlistJSONFile)
 		if err != nil {
 			log.Fatal(err)
@@ -108,8 +111,8 @@ func FetchAllListsFromSheet() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("	Fetching Playlist Info From Disk")
 	} else {
+		log.Printf("	Fetching Playlist Info From API\n")
 		FetchAllPlaylists()
 		j, err := json.Marshal(PlaylistResponses)
 		if err != nil {
@@ -119,10 +122,10 @@ func FetchAllListsFromSheet() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("	Fetching Playlist Info From API")
 	}
 
 	if fileExists(playlistItemJSONFile) {
+		log.Printf("	Fetching Playlist Items From %s\n", playlistItemJSONFile)
 		data, err := ioutil.ReadFile(playlistItemJSONFile)
 		if err != nil {
 			log.Fatal(err)
@@ -131,8 +134,8 @@ func FetchAllListsFromSheet() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("	Fetching Playlist Items From Disk")
 	} else {
+		log.Printf("	Fetching Playlist Items From API\n")
 		FetchAllPlaylistItems()
 		j, err := json.Marshal(PlaylistItemResponses)
 		if err != nil {
@@ -142,10 +145,10 @@ func FetchAllListsFromSheet() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("	Fetching Playlist Items From API")
 	}
 
 	if fileExists(videoJSONFile) {
+		log.Printf("	Fetching Videos From %s\n", videoJSONFile)
 		data, err := ioutil.ReadFile(videoJSONFile)
 		if err != nil {
 			log.Fatal(err)
@@ -154,8 +157,8 @@ func FetchAllListsFromSheet() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("	Fetching Videos From Disk")
 	} else {
+		log.Printf("	Fetching Videos From API\n")
 		FetchAllVideos()
 		j, err := json.Marshal(VideoResponses)
 		if err != nil {
@@ -165,8 +168,8 @@ func FetchAllListsFromSheet() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println("	Fetching Videos From API")
 	}
+
 }
 
 // FetchAllChannels - Fetches youtube data for all channel values on the sheet
