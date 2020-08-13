@@ -69,7 +69,7 @@ func fileExists(filename string) bool {
 func createDataDir() {
 	_, statErr := os.Stat(dataBaseDir)
 	if statErr != nil {
-		fErr := os.Mkdir(dataBaseDir, 0644)
+		fErr := os.Mkdir(dataBaseDir, 0755)
 		if fErr != nil {
 			log.Fatal(fErr)
 		}
