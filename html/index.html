@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+    html, body, .content{
+      text-align: center;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    h1 {
+      color: red;
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      font-size: 2.5em;
+    }
+    #mainVideo {
+      margin: auto;
+      width: 80%;
+      height: 70%;
+    }
+    #reloadButton {
+      font-size: 4em;
+    }
+    #reloadButton > a {
+      color: red;
+    }
+    </style>
+    <meta charset="UTF-8">
+    <title>{{ .SiteTitle }}</title>
+  </head>
+  <body>
+    <div class="content">
+      <h1>{{ .Title }}</h1>
+      <iframe
+        id="mainVideo"
+        autofocus="true"
+        src="https://www.youtube.com/embed/{{ .VideoID }}"
+        frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
+        >
+      </iframe>
+        <div id="reloadButton"><a href="javascript:window.location.reload(true)">↻</a></div>
+    </div>
+  <script>
+    document.addEventListener("keydown", (event) => {
+      if (event.keyCode === 13 || event.keyCode == 82) {
+        location.reload(true);
+      }
+    })
+    window.onload = function(){
+      window.history.pushState('{{ .VideoID }}', '{{ .VideoID }}', '{{ .VideoID }}')
+      let relButton = document.getElementById("reloadButton")
+    };
+  </script>
+  </body>
+</html>

@@ -12,8 +12,11 @@ func InitServer(port string) {
 
 	mux := http.NewServeMux()
 
-	// all
-	mux.HandleFunc("/", handlers.CatchAll)
+	// serves webpage
+	mux.HandleFunc("/", handlers.Home)
+
+	// api
+	mux.HandleFunc("/api/", handlers.APIHelper)
 
 	// random
 	mux.HandleFunc("/api/v1/random/video", handlers.RandomVideo)

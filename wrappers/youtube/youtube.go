@@ -46,6 +46,8 @@ var PlaylistItemResponses []*youtube.PlaylistItemListResponse
 var playlistItemJSONFile = filepath.Join(dataBaseDir, "playlist_item.json")
 var playlistItemCount int
 
+var PlaylistItem *youtube.PlaylistItem
+
 // ChannelResponses - holds responses from channels
 var ChannelResponses []*youtube.ChannelListResponse
 var channelJSONFile = filepath.Join(dataBaseDir, "channel.json")

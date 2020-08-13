@@ -5,13 +5,34 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"text/template"
 
 	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
 	"github.com/lemonase/youtube-meme-api/wrappers/youtube"
 )
 
-// CatchAll -
-func CatchAll(w http.ResponseWriter, r *http.Request) {
+type TemplateData struct {
+	SiteTitle string `json:"siteTitle"`
+	Title     string `json:"title"`
+	VideoID   string `json:"videoID"`
+	// VideoTitle string `json:"videoTitle"`
+}
+
+// Home - Displays the home page
+func Home(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	tmpl := template.Must(template.ParseFiles("html/index.html"))
+	data := &TemplateData{
+		SiteTitle: "🔀 YouTube Meme Randomizer 🔀",
+		Title:     "🔀 YouTube Meme Randomizer 🔀",
+		VideoID:   youtube.GetRandomPlaylistItem().ContentDetails.VideoId,
+	}
+
+	tmpl.Execute(w, data)
+}
+
+// APIHelper - Prints a helpful error message
+func APIHelper(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	fmt.Fprintln(w, "404: URL Not Found")
 
