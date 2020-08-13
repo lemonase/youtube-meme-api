@@ -1,13 +1,10 @@
 # YouTube Meme API
 
-W.I.P
+Frontend just grabs a random video from a list of playlists.
+Everything is stored in [this sheet](https://docs.google.com/spreadsheets/d/1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs/)
+and fetched from the Google Sheets API and additional video/playlist info is retrieved from the YouTube Data API.
 
-An API to get meme videos on YouTube.
-
-Playlist URLs are stored in [this Google Sheet](https://docs.google.com/spreadsheets/d/1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs/edit?usp=sharing)
-and fetched through the Sheets API
-
-Additional video/playlist data is then retrieved from the YouTube Data API.
+Recommendations can be added using [this form](https://docs.google.com/forms/d/1j62PxUnAuFop-o7z0C0PKfBOAYMMyjmom8u_7l2qUDY)
 
 The endpoints (so far) are:
 
@@ -15,14 +12,14 @@ The endpoints (so far) are:
 
 ## GET
 
-### Random Endpoints
+### API "Random" Endpoints
 
 - `/api/v1/random/video` - Gets a random video
 - `/api/v1/random/playlist` - Gets a random playlist
 - `/api/v1/random/playlist/item` - Gets a random playlist item (playlist video)
 - `/api/v1/random/channel` - Gets a random channel
 
-### Aggregate Endpoints
+### API "Aggregate" Endpoints
 
 - `/api/v1/all/video` - Gets all videos
 - `/api/v1/all/playlist` - Gets all playlists
