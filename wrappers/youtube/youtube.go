@@ -89,7 +89,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 				log.Fatal(err)
 			}
 		} else {
-			log.Printf("	Fetching Channel Info From API\n")
+			log.Printf("	Fetching Channel Info From YouTube API\n")
 			FetchAllChannels()
 			j, err := json.Marshal(ChannelResponses)
 			if err != nil {
@@ -114,7 +114,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 				log.Fatal(err)
 			}
 		} else {
-			log.Printf("	Fetching Playlist Info From API\n")
+			log.Printf("	Fetching Playlist Info From YouTube API\n")
 			FetchAllPlaylists()
 			j, err := json.Marshal(PlaylistResponses)
 			if err != nil {
@@ -139,7 +139,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 				log.Fatal(err)
 			}
 		} else {
-			log.Printf("	Fetching Playlist Items From API\n")
+			log.Printf("	Fetching Playlist Items From YouTube API\n")
 			FetchAllPlaylistItems()
 			j, err := json.Marshal(PlaylistItemResponses)
 			if err != nil {
@@ -168,7 +168,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 				log.Fatal(err)
 			}
 		} else {
-			log.Printf("	Fetching Videos From API\n")
+			log.Printf("	Fetching Videos From YouTube API\n")
 			FetchAllVideos()
 			j, err := json.Marshal(VideoResponses)
 			if err != nil {

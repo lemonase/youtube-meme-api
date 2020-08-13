@@ -27,6 +27,8 @@ func handleArgs() {
 	// api parameters
 	if *apiKey != "" {
 		client.InitClientsWithAPIKey(*apiKey)
+	} else if os.Getenv("YT_API_KEY") != "" {
+		client.InitClientsWithAPIKey(os.Getenv("YT_API_KEY"))
 	} else if *secretFile != "" {
 		client.InitClientsWithSecretJSONFile(*secretFile)
 	} else {
