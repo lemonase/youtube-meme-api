@@ -8,20 +8,29 @@
       width: 100%;
       overflow: hidden;
     }
-    h1 {
+    .content {
+      overflow-y: auto;
+    }
+    h1, h2 {
       color: red;
       font-family: "Comic Sans MS", cursive, sans-serif;
       font-size: 2.5em;
+      margin: 0px;
+    }
+    h2 {
+      font-size: 2em;
     }
     #mainVideo {
       margin: auto;
-      width: 80%;
-      height: 70%;
+      width: 90%;
+      height: 75%;
     }
-    #reloadButton {
+    .reloadButton > a {
       font-size: 4em;
+      color: black;
+      text-decoration: none;
     }
-    #reloadButton > a {
+    a:hover {
       color: red;
     }
     </style>
@@ -39,7 +48,17 @@
         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
         >
       </iframe>
-        <div id="reloadButton"><a href="javascript:window.location.reload(true)">↻</a></div>
+      <div class="reloadButton" id="reloadButton"><a href=".">↻</a></div>
+      <h2>↓ Recommend A Meme Below ↓</h2>
+      <iframe
+        src="https://docs.google.com/forms/d/e/1FAIpQLSchSMLlbi0BdKYKRrBRUJ5zTdRicaEbOBgFFfDYVCoyvCRAdg/viewform?embedded=true"
+        width="640"
+        height="870"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0"
+        >Loading…
+      </iframe>
     </div>
   <script>
     document.addEventListener("keydown", (event) => {
@@ -47,10 +66,12 @@
         location.reload(true);
       }
     })
+
     window.onload = function(){
       window.history.pushState('{{ .VideoID }}', '{{ .VideoID }}', '{{ .VideoID }}')
-      let relButton = document.getElementById("reloadButton")
     };
+
+    let relButton = document.getElementById("reloadButton")
   </script>
   </body>
 </html>

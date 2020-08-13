@@ -66,13 +66,7 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-// Fetching
-
-// FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
-func FetchAllListsFromSheet() {
-	log.Println(":: Fetching YouTube Data ::")
-
-	// Create data directory
+func createDataDir() {
 	_, statErr := os.Stat(dataBaseDir)
 	if statErr != nil {
 		fErr := os.Mkdir(dataBaseDir, 0644)
@@ -80,111 +74,132 @@ func FetchAllListsFromSheet() {
 			log.Fatal(fErr)
 		}
 	}
+}
 
-	// Channels
-	if fileExists(channelJSONFile) {
-		log.Printf("	Fetching Channel Info From %s", channelJSONFile)
-		data, err := ioutil.ReadFile(channelJSONFile)
-		if err != nil {
-			log.Fatal(err)
+func FetchOrRead(pageType string, forceRefresh bool) {
+	if pageType == "channel" {
+		if fileExists(channelJSONFile) && !forceRefresh {
+			log.Printf("	Fetching Channel Info From %s", channelJSONFile)
+			data, err := ioutil.ReadFile(channelJSONFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = json.Unmarshal(data, &ChannelResponses)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			log.Printf("	Fetching Channel Info From API\n")
+			FetchAllChannels()
+			j, err := json.Marshal(ChannelResponses)
+			if err != nil {
+				log.Fatalf("Error marshalling json")
+			}
+			err = ioutil.WriteFile(channelJSONFile, j, 0644)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
-		err = json.Unmarshal(data, &ChannelResponses)
-		if err != nil {
-			log.Fatal(err)
+		log.Printf("		Number of Channel Playlists: %d\n", len(ChannelResponses))
+
+	} else if pageType == "playlist" {
+		if fileExists(playlistJSONFile) && !forceRefresh {
+			log.Printf("	Fetching Playlist Info From %s\n", playlistJSONFile)
+			data, err := ioutil.ReadFile(playlistJSONFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = json.Unmarshal(data, &PlaylistResponses)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			log.Printf("	Fetching Playlist Info From API\n")
+			FetchAllPlaylists()
+			j, err := json.Marshal(PlaylistResponses)
+			if err != nil {
+				log.Fatalf("Error marshalling json")
+			}
+			err = ioutil.WriteFile(playlistJSONFile, j, 0644)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
+		log.Printf("		Number of Playlists: %d\n", len(PlaylistResponses))
+
+	} else if pageType == "playlistItem" {
+		if fileExists(playlistItemJSONFile) && !forceRefresh {
+			log.Printf("	Fetching Playlist Items From %s\n", playlistItemJSONFile)
+			data, err := ioutil.ReadFile(playlistItemJSONFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = json.Unmarshal(data, &PlaylistItemResponses)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			log.Printf("	Fetching Playlist Items From API\n")
+			FetchAllPlaylistItems()
+			j, err := json.Marshal(PlaylistItemResponses)
+			if err != nil {
+				log.Fatalf("Error marshalling json")
+			}
+			err = ioutil.WriteFile(playlistItemJSONFile, j, 0644)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+		log.Printf("		Number of Playlist Pages: %d\n", len(PlaylistItemResponses))
+		for _, pl := range PlaylistItemResponses {
+			playlistItemCount += len(pl.Items)
+		}
+		log.Printf("		Number of Playlist Items: %d\n", playlistItemCount)
+
+	} else if pageType == "video" {
+		if fileExists(videoJSONFile) && !forceRefresh {
+			log.Printf("	Fetching Videos From %s\n", videoJSONFile)
+			data, err := ioutil.ReadFile(videoJSONFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = json.Unmarshal(data, &VideoResponses)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			log.Printf("	Fetching Videos From API\n")
+			FetchAllVideos()
+			j, err := json.Marshal(VideoResponses)
+			if err != nil {
+				log.Fatalf("Error marshalling json")
+			}
+			err = ioutil.WriteFile(videoJSONFile, j, 0644)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+		log.Printf("		Number of Videos: %d\n", len(VideoResponses))
+
 	} else {
-		log.Printf("	Fetching Channel Info From API\n")
-		FetchAllChannels()
-		j, err := json.Marshal(ChannelResponses)
-		if err != nil {
-			log.Fatalf("Error marshalling json")
-		}
-		err = ioutil.WriteFile(channelJSONFile, j, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
+		log.Fatalf("Unknown page type to fetch\n")
 	}
-	log.Printf("		Number of Channel Playlists: %d\n", len(ChannelResponses))
+}
 
-	// Playlists
-	if fileExists(playlistJSONFile) {
-		log.Printf("	Fetching Playlist Info From %s\n", playlistJSONFile)
-		data, err := ioutil.ReadFile(playlistJSONFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = json.Unmarshal(data, &PlaylistResponses)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		log.Printf("	Fetching Playlist Info From API\n")
-		FetchAllPlaylists()
-		j, err := json.Marshal(PlaylistResponses)
-		if err != nil {
-			log.Fatalf("Error marshalling json")
-		}
-		err = ioutil.WriteFile(playlistJSONFile, j, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	log.Printf("		Number of Playlists: %d\n", len(PlaylistResponses))
+func FetchOrReadAll(forceRefresh bool) {
+	FetchOrRead("channel", forceRefresh)
+	FetchOrRead("playlist", forceRefresh)
+	FetchOrRead("playlistItem", forceRefresh)
+	FetchOrRead("video", forceRefresh)
+}
 
-	// Playlist Items
-	if fileExists(playlistItemJSONFile) {
-		log.Printf("	Fetching Playlist Items From %s\n", playlistItemJSONFile)
-		data, err := ioutil.ReadFile(playlistItemJSONFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = json.Unmarshal(data, &PlaylistItemResponses)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		log.Printf("	Fetching Playlist Items From API\n")
-		FetchAllPlaylistItems()
-		j, err := json.Marshal(PlaylistItemResponses)
-		if err != nil {
-			log.Fatalf("Error marshalling json")
-		}
-		err = ioutil.WriteFile(playlistItemJSONFile, j, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	log.Printf("		Number of Playlist Pages: %d\n", len(PlaylistItemResponses))
-	for _, pl := range PlaylistItemResponses {
-		playlistItemCount += len(pl.Items)
-	}
-	log.Printf("		Number of Playlist Items: %d\n", playlistItemCount)
+// Fetching
 
-	// Videos
-	if fileExists(videoJSONFile) {
-		log.Printf("	Fetching Videos From %s\n", videoJSONFile)
-		data, err := ioutil.ReadFile(videoJSONFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = json.Unmarshal(data, &VideoResponses)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		log.Printf("	Fetching Videos From API\n")
-		FetchAllVideos()
-		j, err := json.Marshal(VideoResponses)
-		if err != nil {
-			log.Fatalf("Error marshalling json")
-		}
-		err = ioutil.WriteFile(videoJSONFile, j, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	log.Printf("		Number of Videos: %d\n", len(VideoResponses))
-
+// FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
+func FetchAllListsFromSheet() {
+	createDataDir()
+	log.Println(":: Fetching YouTube Data ::")
+	FetchOrReadAll(false)
 }
 
 // FetchAllChannels - Fetches youtube data for all channel values on the sheet

@@ -23,8 +23,8 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	tmpl := template.Must(template.ParseFiles("html/index.html"))
 	data := &TemplateData{
-		SiteTitle: "🔀 YouTube Meme Randomizer 🔀",
-		Title:     "🔀 YouTube Meme Randomizer 🔀",
+		SiteTitle: "🔀 YouTube Meme Shuffler 🔀",
+		Title:     "🔀 YouTube Meme Shuffler 🔀",
 		VideoID:   youtube.GetRandomPlaylistItem().ContentDetails.VideoId,
 	}
 
@@ -163,21 +163,35 @@ func UpdateAllValuesFromSheet(w http.ResponseWriter, r *http.Request) {
 
 // UpdateAllChannelsFromSheet -
 func UpdateAllChannelsFromSheet(w http.ResponseWriter, r *http.Request) {
+	oldLen := sheets.ChannelLength
+
 	sheets.FetchChannelValues()
-	youtube.ChannelResponses = nil
-	youtube.FetchAllChannels()
+	if oldLen != sheets.ChannelLength {
+		youtube.ChannelResponses = nil
+		youtube.FetchOrRead("channel", true)
+	}
 }
 
 // UpdateAllPlaylistsFromSheet -
 func UpdateAllPlaylistsFromSheet(w http.ResponseWriter, r *http.Request) {
+	oldLen := sheets.PlaylistLength
+
 	sheets.FetchPlaylistValues()
-	youtube.PlaylistResponses = nil
-	youtube.FetchAllPlaylists()
+	if oldLen != sheets.PlaylistLength {
+		youtube.PlaylistResponses = nil
+		youtube.PlaylistItemResponses = nil
+		youtube.FetchOrRead("playlist", true)
+		youtube.FetchOrRead("playlistItem", true)
+	}
 }
 
 // UpdateAllVideosFromSheet -
 func UpdateAllVideosFromSheet(w http.ResponseWriter, r *http.Request) {
+	oldLen := sheets.VideoLength
+
 	sheets.FetchVideoValues()
-	youtube.VideoResponses = nil
-	youtube.FetchAllVideos()
+	if oldLen != sheets.VideoLength {
+		youtube.VideoResponses = nil
+		youtube.FetchOrRead("video", true)
+	}
 }
