@@ -19,30 +19,38 @@ The endpoints (so far) are:
 
 - `/api/v1/random/video` - Gets a random video
 - `/api/v1/random/playlist` - Gets a random playlist
+- `/api/v1/random/playlist/item` - Gets a random playlist item (playlist video)
 - `/api/v1/random/channel` - Gets a random channel
 
 ### Aggregate Endpoints
 
 - `/api/v1/all/video` - Gets all videos
 - `/api/v1/all/playlist` - Gets all playlists
+- `/api/v1/all/playlist/item` - Gets all playlists items/videos
 - `/api/v1/all/channel` - Gets all channels
 
-## Client usage
+## Client usage examples
 
-### Video
+### Bash
 
 ```shell
-$ xdg-open "https://www.youtube.com/watch?v=$(curl -sS localhost:8000/api/v1/random/video | jq .contentDetails.videoId | sed 's/"//g')"
+endpoint="http://localhost:8000/api/v1/random/playlist/item"
+vid_id="$(curl -sSL $endpoint | jq .contentDetails.videoId | sed 's/"//g')"
+vid_url="https://www.youtube.com/watch?v=$vid_id"
+
+# on linux
+xdg-open $vid_url
+
+# on mac
+open $vid_url
 ```
 
-### Playlist
+### PowerShell
 
-```shell
-xdg-open "https://www.youtube.com/playlist?list=$(curl -sS localhost:8000/api/v1/random/playlist | jq .items[0].id | sed 's/"//g')"
-```
+```powershell
+$endpoint = "http://localhost:8000/api/v1/random/playlist/item"
+$vid_id = ((iwr "$endpoint").Content | ConvertFrom-Json).contentDetails.videoId
+$vid_url = "https://www.youtube.com/watch?v=$vid_id"
 
-### Channel
-
-```shell
-$ xdg-open "https://www.youtube.com/channel/$(curl -sS localhost:8000/api/v1/random/channel | jq .items[0].id | sed 's/"//g')"
+start chrome $vid_url
 ```
