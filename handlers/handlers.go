@@ -15,7 +15,6 @@ type TemplateData struct {
 	SiteTitle string `json:"siteTitle"`
 	Title     string `json:"title"`
 	VideoID   string `json:"videoID"`
-	// VideoTitle string `json:"videoTitle"`
 }
 
 // Home - Displays the home page
@@ -23,8 +22,8 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	tmpl := template.Must(template.ParseFiles("html/index.html"))
 	data := &TemplateData{
-		SiteTitle: "🔀 YouTube Meme Shuffler 🔀",
-		Title:     "🔀 YouTube Meme Shuffler 🔀",
+		SiteTitle: "🔀 YouTube Meme Shuffle 🔀",
+		Title:     "🔀 YouTube Meme Shuffle 🔀",
 		VideoID:   youtube.GetRandomPlaylistItem().ContentDetails.VideoId,
 	}
 
