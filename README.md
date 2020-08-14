@@ -1,16 +1,19 @@
 # YouTube Meme API
 
-Frontend just grabs a random video from a list of playlists.
+Frontend grabs a random video from a list of playlists.
+
 Everything is stored in [this sheet](https://docs.google.com/spreadsheets/d/1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs/)
-and fetched from the Google Sheets API and additional video/playlist info is retrieved from the YouTube Data API.
+and fetched from the Google Sheets API. Additional video/playlist info is retrieved from the YouTube Data API.
 
 Recommendations can be added using [this form](https://docs.google.com/forms/d/1j62PxUnAuFop-o7z0C0PKfBOAYMMyjmom8u_7l2qUDY)
 
-The endpoints (so far) are:
-
 ## HTTP Endpoints
 
+<https://youtube-meme-api.herokuapp.com/>
+
 ## GET
+
+- `/` - Home page
 
 ### API "Random" Endpoints
 
