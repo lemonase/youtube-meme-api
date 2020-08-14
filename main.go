@@ -24,7 +24,8 @@ func handleArgs() {
 	}
 	flag.Parse()
 
-	// api parameters
+	// client/api parameters
+
 	if *apiKey != "" {
 		client.InitClientsWithAPIKey(*apiKey)
 	} else if os.Getenv("YT_API_KEY") != "" {
@@ -38,6 +39,9 @@ func handleArgs() {
 	}
 
 	// server parameters
+	if os.Getenv("PORT") != "" {
+		*port = os.Getenv("PORT")
+	}
 	if strings.Index(*port, ":") == -1 {
 		*port = ":" + *port
 	}
