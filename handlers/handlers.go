@@ -11,6 +11,7 @@ import (
 	"github.com/lemonase/youtube-meme-api/wrappers/youtube"
 )
 
+// TemplateData - The data the goes into the served html page
 type TemplateData struct {
 	SiteTitle string `json:"siteTitle"`
 	Title     string `json:"title"`
@@ -142,25 +143,23 @@ func RandomChannel(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(j))
 }
 
-// Updates
-// TODO set up a function on the sheet that calls these endpoint when the sheet changes
-
-// FetchAllValuesFromSheet -
-func FetchAllValuesFromSheet() {
+// FetchAllYoutubeInfoFromSheet - Gets sheet values, resets responses and fetches youtube data
+func FetchAllYoutubeInfoFromSheet(forceRefresh bool) {
 	sheets.FetchAllValues()
 
 	youtube.ChannelResponses = nil
 	youtube.PlaylistResponses = nil
 	youtube.VideoResponses = nil
-	youtube.FetchAllListsFromSheet()
+
+	youtube.FetchOrReadAll(forceRefresh)
 }
 
-// UpdateAllValuesFromSheet -
+// UpdateAllValuesFromSheet - Updates json files for responses by enforcing refresh
 func UpdateAllValuesFromSheet(w http.ResponseWriter, r *http.Request) {
-	FetchAllValuesFromSheet()
+	FetchAllYoutubeInfoFromSheet(true)
 }
 
-// UpdateAllChannelsFromSheet -
+// UpdateAllChannelsFromSheet - Refetches channel responses and forces refresh
 func UpdateAllChannelsFromSheet(w http.ResponseWriter, r *http.Request) {
 	oldLen := sheets.ChannelLength
 
@@ -171,7 +170,7 @@ func UpdateAllChannelsFromSheet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// UpdateAllPlaylistsFromSheet -
+// UpdateAllPlaylistsFromSheet - Refetches playlist responses and forces refresh
 func UpdateAllPlaylistsFromSheet(w http.ResponseWriter, r *http.Request) {
 	oldLen := sheets.PlaylistLength
 
@@ -184,7 +183,7 @@ func UpdateAllPlaylistsFromSheet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// UpdateAllVideosFromSheet -
+// UpdateAllVideosFromSheet - Refetches video responses and forces refresh
 func UpdateAllVideosFromSheet(w http.ResponseWriter, r *http.Request) {
 	oldLen := sheets.VideoLength
 

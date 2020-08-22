@@ -22,39 +22,39 @@ import (
  * https://developers.google.com/youtube/v3/code_samples/go#search_by_keyword
  */
 
+// Client Info
+
 // Client - youtube client for auth and API methods
 var Client = &client.Services.YouTube
 
 // PageSize - the number of items that will be returned in a single API call
 var PageSize int64 = 50
 
-// TODO write responses to one or more JSON files
-// instead of storing in memory.
+// The base directory where JSON responses are stored
+var dataDirectory = "data"
 
-var dataBaseDir = "data"
+// Response Data
 
 // VideoResponses - holds responses from videos
 var VideoResponses []*youtube.VideoListResponse
-var videoJSONFile = filepath.Join(dataBaseDir, "video.json")
+var videoJSONFile = filepath.Join(dataDirectory, "video.json")
 
 // PlaylistResponses - holds responses from playlists
 var PlaylistResponses []*youtube.PlaylistListResponse
-var playlistJSONFile = filepath.Join(dataBaseDir, "playlist.json")
+var playlistJSONFile = filepath.Join(dataDirectory, "playlist.json")
 
 // PlaylistItemResponses - holds responses for items of a playlist
 var PlaylistItemResponses []*youtube.PlaylistItemListResponse
-var playlistItemJSONFile = filepath.Join(dataBaseDir, "playlist_item.json")
+var playlistItemJSONFile = filepath.Join(dataDirectory, "playlist_item.json")
 var playlistItemCount int
-
-var PlaylistItem *youtube.PlaylistItem
 
 // ChannelResponses - holds responses from channels
 var ChannelResponses []*youtube.ChannelListResponse
-var channelJSONFile = filepath.Join(dataBaseDir, "channel.json")
+var channelJSONFile = filepath.Join(dataDirectory, "channel.json")
 
 // SearchResponses - holds response from a search call
 var SearchResponses []*youtube.SearchListResponse
-var searchJSONFile = filepath.Join(dataBaseDir, "search.json")
+var searchJSONFile = filepath.Join(dataDirectory, "search.json")
 
 // Files
 
@@ -69,17 +69,30 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-func createDataDir() {
-	_, statErr := os.Stat(dataBaseDir)
-	if statErr != nil {
-		fErr := os.Mkdir(dataBaseDir, 0755)
-		if fErr != nil {
-			log.Fatal(fErr)
+func checkAndCreateDir(directory string) {
+	log.Printf("	Creating directory: %s\n", directory)
+	_, err := os.Stat(directory)
+	if os.IsNotExist(err) {
+		errDir := os.MkdirAll(directory, 0755)
+		if errDir != nil {
+			log.Fatal(errDir)
 		}
 	}
+
+	// _, statErr := os.Stat(directory)
+	// if statErr != nil {
+	// 	log.Fatal(statErr)
+	// }
+
 }
 
+// Fetching
+
+// FetchOrRead - Read or fetch and write all values for a specific page type
 func FetchOrRead(pageType string, forceRefresh bool) {
+
+	checkAndCreateDir(dataDirectory)
+
 	if pageType == "channel" {
 		if fileExists(channelJSONFile) && !forceRefresh {
 			log.Printf("	Fetching Channel Info From %s", channelJSONFile)
@@ -98,7 +111,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 			if err != nil {
 				log.Fatalf("Error marshalling json")
 			}
-			err = ioutil.WriteFile(channelJSONFile, j, 0644)
+			err = ioutil.WriteFile(channelJSONFile, j, 0755)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -123,7 +136,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 			if err != nil {
 				log.Fatalf("Error marshalling json")
 			}
-			err = ioutil.WriteFile(playlistJSONFile, j, 0644)
+			err = ioutil.WriteFile(playlistJSONFile, j, 0755)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -148,7 +161,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 			if err != nil {
 				log.Fatalf("Error marshalling json")
 			}
-			err = ioutil.WriteFile(playlistItemJSONFile, j, 0644)
+			err = ioutil.WriteFile(playlistItemJSONFile, j, 0755)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -177,7 +190,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 			if err != nil {
 				log.Fatalf("Error marshalling json")
 			}
-			err = ioutil.WriteFile(videoJSONFile, j, 0644)
+			err = ioutil.WriteFile(videoJSONFile, j, 0755)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -189,20 +202,14 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 	}
 }
 
+// FetchOrReadAll - Fetches all content types from the Youtube API
 func FetchOrReadAll(forceRefresh bool) {
+	log.Println(":: Fetching All YouTube Data ::")
+
 	FetchOrRead("channel", forceRefresh)
 	FetchOrRead("playlist", forceRefresh)
 	FetchOrRead("playlistItem", forceRefresh)
 	FetchOrRead("video", forceRefresh)
-}
-
-// Fetching
-
-// FetchAllListsFromSheet - Fetches data for all the values in the sheet ranges
-func FetchAllListsFromSheet() {
-	createDataDir()
-	log.Println(":: Fetching YouTube Data ::")
-	FetchOrReadAll(false)
 }
 
 // FetchAllChannels - Fetches youtube data for all channel values on the sheet

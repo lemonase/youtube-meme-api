@@ -15,44 +15,50 @@ import (
  * https://docs.google.com/spreadsheets/d/1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs/edit?usp=sharing
  */
 
-// SheetID - The main sheet ID that we are working with
-const SheetID = "1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs"
+// Client Info
 
 // Client - The authroized youtube service client (either with a key or a token)
 var Client = &client.Services.Sheets
 
-// VideoRange -
+// SheetID - The main sheet ID that we are working with
+const SheetID = "1MuvC8JpJte1wzAS0m9qR0rr2-gxzL8aaX6lvlKeAqvs"
+
+// Ranges
+
+// VideoRange - Range of values for videos to fetch
 var VideoRange = "Sheet1!A2:A1000"
 
-// PlaylistRange -
+// PlaylistRange - Range of values for playlists to fetch
 var PlaylistRange = "Sheet1!C2:C1000"
 
-// ChannelRange -
+// ChannelRange - Range of values for channels to fetch
 var ChannelRange = "Sheet1!E2:E1000"
 
-// ChannelValues -
-var ChannelValues [][]interface{}
+// Values
 
-// PlaylistValues -
-var PlaylistValues [][]interface{}
-
-// VideoValues -
+// VideoValues - Values for videos that are fetched
 var VideoValues [][]interface{}
 
-// ChannelLength -
+// PlaylistValues - Values for playlists that are fetched
+var PlaylistValues [][]interface{}
+
+// ChannelValues - Values for channels that are fetched
+var ChannelValues [][]interface{}
+
+// Lengths
+
+// ChannelLength - Lengths of channel values
 var ChannelLength int
 
-// PlaylistLength -
+// PlaylistLength - Length of playlist values
 var PlaylistLength int
 
-// VideoLength -
+// VideoLength - Length of video values
 var VideoLength int
 
-/*
- * Fetch Functions
- */
+// Fetch Functions
 
-// FetchAllValues -
+// FetchAllValues - Fetchs all the relevant rows from the Google Sheet
 func FetchAllValues() {
 	log.Printf(":: Fetching Values From Google Sheet ::\n")
 	log.Printf("https://docs.google.com/spreadsheets/d/%s\n", SheetID)
@@ -62,7 +68,7 @@ func FetchAllValues() {
 	FetchVideoValues()
 }
 
-// FetchSheetValues - wrapper to SheetsAPI
+// FetchSheetValues - Wrapper to SheetsAPI
 // Params - takes a sheetID for a spreadsheet, and a range of values to get
 // Returns - the length of the values and the values themselves
 func FetchSheetValues(sheetID string, playlistRange string) (int, [][]interface{}) {
@@ -75,46 +81,44 @@ func FetchSheetValues(sheetID string, playlistRange string) (int, [][]interface{
 	return len(resp.Values), resp.Values
 }
 
-// FetchChannelValues -
+// FetchChannelValues - Calls SheetsAPI to retrieve ChannelValues
 func FetchChannelValues() {
 	ChannelLength, ChannelValues = FetchSheetValues(SheetID, ChannelRange)
 	log.Printf("	Fetching Channels From Range %s\n", ChannelRange)
 	log.Printf("		Number of Channel URLs: %d\n", ChannelLength)
 }
 
-// FetchPlaylistValues -
+// FetchPlaylistValues - Calls SheetsAPI to retrieve PlaylistValues
 func FetchPlaylistValues() {
 	PlaylistLength, PlaylistValues = FetchSheetValues(SheetID, PlaylistRange)
 	log.Printf("	Fetching Playlists From Range %s\n", PlaylistRange)
 	log.Printf("		Number of Playlist URLs: %d\n", PlaylistLength)
 }
 
-// FetchVideoValues -
+// FetchVideoValues - Calls SheetsAPI to retrieve VideoValues
 func FetchVideoValues() {
 	VideoLength, VideoValues = FetchSheetValues(SheetID, VideoRange)
 	log.Printf("	Fetching Videos From Range %s\n", VideoRange)
 	log.Printf("		Number of Video URLs: %d\n", VideoLength)
 }
 
-/*
- * Random Functions
- */
+// Randomizer Functions
 
-// GetRandomVideo -
+// GetRandomVideo - Returns a "random" value from all VideoValues
 func GetRandomVideo() string {
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn(VideoLength)
 	return fmt.Sprintf("%s", VideoValues[randIndex][0])
 }
 
-// GetRandomPlaylist - returns a random value from PlaylistValues array
+// GetRandomPlaylist - Returns a "random" value from all PlaylistValues
 func GetRandomPlaylist() string {
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn(PlaylistLength)
 	return fmt.Sprintf("%s", PlaylistValues[randIndex][0])
 }
 
-// GetRandomChannel -
+// GetRandomChannel - Returns a "random" value from all ChannelValues
 func GetRandomChannel() string {
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn(ChannelLength)

@@ -17,6 +17,8 @@ var (
 )
 
 func handleArgs() {
+
+	// flag parsing
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
@@ -25,7 +27,6 @@ func handleArgs() {
 	flag.Parse()
 
 	// client/api parameters
-
 	if *apiKey != "" {
 		client.InitClientsWithAPIKey(*apiKey)
 	} else if os.Getenv("YT_API_KEY") != "" {
@@ -42,6 +43,8 @@ func handleArgs() {
 	if os.Getenv("PORT") != "" {
 		*port = os.Getenv("PORT")
 	}
+
+	// prepend ":" for port if not already
 	if strings.Index(*port, ":") == -1 {
 		*port = ":" + *port
 	}
