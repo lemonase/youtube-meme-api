@@ -2,54 +2,65 @@
 <html lang="en">
   <head>
     <style>
-    html, body, .content{
-      text-align: center;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-    }
-    .content {
-      overflow-y: auto;
-    }
-    h1, h2 {
-      color: red;
-      font-family: "Comic Sans MS", cursive, sans-serif;
-      font-size: 2.5em;
-      margin: 0px;
-    }
-    h2 {
-      font-size: 2em;
-    }
-    #mainVideo {
-      margin: auto;
-      width: 90%;
-      height: 75%;
-    }
-    .reloadButton > a {
-      font-size: 4em;
-      color: black;
-      text-decoration: none;
-    }
-    a:hover {
-      color: red;
-    }
+      html,
+      body,
+      .content {
+        text-align: center;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+      .content {
+        overflow-y: auto;
+      }
+      h1,
+      h2 {
+        color: red;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        font-size: 2.5em;
+        margin: 0px;
+      }
+      h2 {
+        font-size: 2em;
+      }
+      #mainVideo {
+        margin: auto;
+        width: 90%;
+        height: 75%;
+      }
+      #pageTitle {
+        margin-bottom: 10px;
+      }
+      .reloadButton > a {
+        font-size: 4em;
+        color: #424242;
+        text-decoration: none;
+      }
+      a:hover {
+        color: red;
+      }
     </style>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>{{ .SiteTitle }}</title>
   </head>
+
   <body>
     <div class="content">
-      <h1>{{ .Title }}</h1>
+      <h1 id="pageTitle">{{ .Title }}</h1>
+
       <iframe
         id="mainVideo"
         autofocus="true"
         src="https://www.youtube.com/embed/{{ .VideoID }}"
         frameborder="0"
-        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
-        >
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      >
       </iframe>
+
       <div class="reloadButton" id="reloadButton"><a href=".">↻</a></div>
       <h2>↓ Suggest A Meme Below ↓</h2>
+
       <iframe
         src="https://docs.google.com/forms/d/e/1FAIpQLSchSMLlbi0BdKYKRrBRUJ5zTdRicaEbOBgFFfDYVCoyvCRAdg/viewform?embedded=true"
         width="640"
@@ -60,18 +71,23 @@
         >Loading…
       </iframe>
     </div>
-  <script>
-    document.addEventListener("keydown", (event) => {
-      if (event.keyCode === 13 || event.keyCode == 82) {
-        location.reload(true);
-      }
-    })
 
-    window.onload = function(){
-      window.history.pushState('{{ .VideoID }}', '{{ .VideoID }}', '{{ .VideoID }}')
-    };
+    <script>
+      document.addEventListener("keydown", event => {
+        if (event.keyCode === 13 || event.keyCode == 82) {
+          location.reload(true);
+        }
+      });
 
-    let relButton = document.getElementById("reloadButton")
-  </script>
+      window.onload = function() {
+        window.history.pushState(
+          "{{ .VideoID }}",
+          "{{ .VideoID }}",
+          "{{ .VideoID }}"
+        );
+      };
+
+      let relButton = document.getElementById("reloadButton");
+    </script>
   </body>
 </html>
