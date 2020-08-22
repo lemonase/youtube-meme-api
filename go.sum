@@ -115,6 +115,8 @@ github.com/lemonase/youtube-meme-api/client v0.0.0-20200813223442-b939580ac6b1 h
 github.com/lemonase/youtube-meme-api/client v0.0.0-20200813223442-b939580ac6b1/go.mod h1:IbNCLMFKp1AnQPaKBSzxbPm6LYgqBAPCnEdl/qaNM+Y=
 github.com/lemonase/youtube-meme-api/client v0.0.0-20200822011907-e313268b8854 h1:1CyvKN0g3Q0TGlPsEFCKuXN1QffsN0HaVxRLBySP1D4=
 github.com/lemonase/youtube-meme-api/client v0.0.0-20200822011907-e313268b8854/go.mod h1:IbNCLMFKp1AnQPaKBSzxbPm6LYgqBAPCnEdl/qaNM+Y=
+github.com/lemonase/youtube-meme-api/client v0.0.0-20200822013525-6fe3736cdbc8 h1:MA8nYgqpFmq1OOg6ES4VhFvSwQSgs04jB+N6D8wSqMc=
+github.com/lemonase/youtube-meme-api/client v0.0.0-20200822013525-6fe3736cdbc8/go.mod h1:IbNCLMFKp1AnQPaKBSzxbPm6LYgqBAPCnEdl/qaNM+Y=
 github.com/lemonase/youtube-meme-api/wrappers v0.0.0-20200707184725-0661340f2158/go.mod h1:lTt8kTj56g8liwg+uXkp8ajrxHzzIjdjJ2eTYgC1S5Y=
 github.com/lemonase/youtube-meme-api/wrappers v0.0.0-20200813200234-1d7e5148a775 h1:OpU7jXRY5Bcq/Qj0A9QaXv8vDtggCrjv08OsJpRhApY=
 github.com/lemonase/youtube-meme-api/wrappers v0.0.0-20200813200234-1d7e5148a775/go.mod h1:5iXAk8G5tUErBtULwaiFhjt3A68k7n3rZS9yb3kLHjU=
