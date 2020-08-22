@@ -154,7 +154,7 @@ func FetchAllYoutubeInfoFromSheet(forceRefresh bool) {
 	youtube.FetchOrReadAll(forceRefresh)
 }
 
-// UpdateAllValuesFromSheet - Updates json files for responses by enforcing refresh
+// UpdateAllValuesFromSheet - Updates json files by enforcing refresh
 func UpdateAllValuesFromSheet(w http.ResponseWriter, r *http.Request) {
 	FetchAllYoutubeInfoFromSheet(true)
 }
