@@ -70,7 +70,6 @@ func fileExists(filename string) bool {
 }
 
 func checkAndCreateDir(directory string) {
-	log.Printf("	Creating directory: %s\n", directory)
 	_, err := os.Stat(directory)
 	if os.IsNotExist(err) {
 		errDir := os.MkdirAll(directory, 0755)
@@ -78,21 +77,13 @@ func checkAndCreateDir(directory string) {
 			log.Fatal(errDir)
 		}
 	}
-
-	// _, statErr := os.Stat(directory)
-	// if statErr != nil {
-	// 	log.Fatal(statErr)
-	// }
-
 }
 
 // Fetching
 
 // FetchOrRead - Read or fetch and write all values for a specific page type
 func FetchOrRead(pageType string, forceRefresh bool) {
-
 	checkAndCreateDir(dataDirectory)
-
 	if pageType == "channel" {
 		if fileExists(channelJSONFile) && !forceRefresh {
 			log.Printf("	Fetching Channel Info From %s", channelJSONFile)
