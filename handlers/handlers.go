@@ -23,8 +23,8 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	tmpl := template.Must(template.ParseFiles("html/index.html"))
 	data := &TemplateData{
-		SiteTitle: "🔀 YouTube Meme Shuffle 🔀",
-		Title:     "🔀 YouTube Meme Shuffle 🔀",
+		SiteTitle: "YouTube Meme Shuffle 🔀",
+		Title:     "YouTube Meme Shuffle",
 		VideoID:   youtube.GetRandomPlaylistItem().ContentDetails.VideoId,
 	}
 
