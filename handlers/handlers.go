@@ -35,24 +35,25 @@ func Home(w http.ResponseWriter, r *http.Request) {
 func APIHelper(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	fmt.Fprintln(w, "404: URL Not Found")
-
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "Endpoints are: ")
+	fmt.Fprintln(w, "	Random:")
+	fmt.Fprintln(w, "GET	/api/v1/random/video")
+	fmt.Fprintln(w, "GET	/api/v1/random/playlist")
+	fmt.Fprintln(w, "GET	/api/v1/random/playlist/item")
+	fmt.Fprintln(w, "GET	/api/v1/random/channel")
 	fmt.Fprintln(w, "")
-	fmt.Fprintln(w, "/api/v1/random/video")
-	fmt.Fprintln(w, "/api/v1/random/playlist")
-	fmt.Fprintln(w, "/api/v1/random/playlist/item")
-	fmt.Fprintln(w, "/api/v1/random/channel")
+	fmt.Fprintln(w, "	All:")
+	fmt.Fprintln(w, "GET   	/api/v1/all/video")
+	fmt.Fprintln(w, "GET   	/api/v1/all/playlist")
+	fmt.Fprintln(w, "GET   	/api/v1/all/playlist/item")
+	fmt.Fprintln(w, "GET   	/api/v1/all/channel")
 	fmt.Fprintln(w, "")
-	fmt.Fprintln(w, "/api/v1/all/video")
-	fmt.Fprintln(w, "/api/v1/all/playlist")
-	fmt.Fprintln(w, "/api/v1/all/playlist/item")
-	fmt.Fprintln(w, "/api/v1/all/channel")
-	fmt.Fprintln(w, "")
-	fmt.Fprintln(w, "/api/v1/update/all")
-	fmt.Fprintln(w, "/api/v1/update/video")
-	fmt.Fprintln(w, "/api/v1/update/playlist")
-	fmt.Fprintln(w, "/api/v1/update/channel")
+	fmt.Fprintln(w, "	Update:")
+	fmt.Fprintln(w, "GET   	/api/v1/update/all")
+	fmt.Fprintln(w, "GET   	/api/v1/update/video")
+	fmt.Fprintln(w, "GET   	/api/v1/update/playlist")
+	fmt.Fprintln(w, "GET   	/api/v1/update/channel")
 }
 
 // Videos
@@ -60,6 +61,7 @@ func APIHelper(w http.ResponseWriter, r *http.Request) {
 // AllVideos - Get all singular videos responses
 func AllVideos(w http.ResponseWriter, r *http.Request) {
 	j, err := json.MarshalIndent(youtube.VideoResponses, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Fatalf("Could not marshal data %v", err)
 	}
@@ -72,6 +74,7 @@ func RandomVideo(w http.ResponseWriter, r *http.Request) {
 	item := youtube.GetRandomVideo()
 
 	j, err := json.MarshalIndent(item, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Fatalf("Could not marshal data %v", err)
 	}
@@ -84,6 +87,7 @@ func RandomVideo(w http.ResponseWriter, r *http.Request) {
 // AllPlaylists - Get all playlist responses
 func AllPlaylists(w http.ResponseWriter, r *http.Request) {
 	j, err := json.MarshalIndent(youtube.PlaylistResponses, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Fatalf("Could not marshal data %v", err)
 	}
@@ -94,6 +98,7 @@ func AllPlaylists(w http.ResponseWriter, r *http.Request) {
 // AllPlaylistsWithItems - Get all playlist responses
 func AllPlaylistsWithItems(w http.ResponseWriter, r *http.Request) {
 	j, err := json.MarshalIndent(youtube.PlaylistItemResponses, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Fatalf("Could not marshal data %v", err)
 	}
@@ -105,6 +110,7 @@ func AllPlaylistsWithItems(w http.ResponseWriter, r *http.Request) {
 func RandomPlaylist(w http.ResponseWriter, r *http.Request) {
 	randomPlaylist := youtube.GetRandomPlaylist()
 	j, err := json.MarshalIndent(randomPlaylist, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Fatalf("Could not unmarshal %v", err)
 	}
@@ -115,6 +121,7 @@ func RandomPlaylist(w http.ResponseWriter, r *http.Request) {
 func RandomPlaylistItem(w http.ResponseWriter, r *http.Request) {
 	item := youtube.GetRandomPlaylistItem()
 	j, err := json.MarshalIndent(item, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Fatalf("Could not unmarshal %v", err)
 	}
@@ -126,6 +133,7 @@ func RandomPlaylistItem(w http.ResponseWriter, r *http.Request) {
 // AllChannels - Get all youtube channel responses
 func AllChannels(w http.ResponseWriter, r *http.Request) {
 	j, err := json.MarshalIndent(youtube.ChannelResponses, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Fatalf("Could not marshal data %v", err)
 	}
@@ -137,6 +145,7 @@ func AllChannels(w http.ResponseWriter, r *http.Request) {
 func RandomChannel(w http.ResponseWriter, r *http.Request) {
 	randomChannel := youtube.GetRandomChannel()
 	j, err := json.MarshalIndent(randomChannel, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Fatalf("Could not unmarshal %v", err)
 	}
