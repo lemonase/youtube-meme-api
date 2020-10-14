@@ -34,6 +34,9 @@ var PlaylistRange = "Sheet1!C2:C1000"
 // ChannelRange - Range of values for channels to fetch
 var ChannelRange = "Sheet1!E2:E1000"
 
+// SearchRange - Range of values for channels to fetch
+var SearchRange = "Sheet1!G2:G1000"
+
 // Values
 
 // VideoValues - Values for videos that are fetched
@@ -45,6 +48,9 @@ var PlaylistValues [][]interface{}
 // ChannelValues - Values for channels that are fetched
 var ChannelValues [][]interface{}
 
+// SearchValues - Values for searches
+var SearchValues [][]interface{}
+
 // Lengths
 
 // ChannelLength - Lengths of channel values
@@ -55,6 +61,9 @@ var PlaylistLength int
 
 // VideoLength - Length of video values
 var VideoLength int
+
+// SearcheLength - Length of values for searches
+var SearchLength int
 
 // Fetch Functions
 
@@ -100,6 +109,13 @@ func FetchVideoValues() {
 	VideoLength, VideoValues = FetchSheetValues(SheetID, VideoRange)
 	log.Printf("	Fetching Videos From Range %s\n", VideoRange)
 	log.Printf("		Number of Video URLs: %d\n", VideoLength)
+}
+
+// FetchSearchValues - Calls SheetsAPI to retrieve SearchValues
+func FetchSearchValues() {
+	SearchLength, SearchValues = FetchSheetValues(SheetID, SearchRange)
+	log.Printf("	Fetching Searchs From Range %s\n", SearchRange)
+	log.Printf("		Number of Searches: %d\n", SearchLength)
 }
 
 // Randomizer Functions
