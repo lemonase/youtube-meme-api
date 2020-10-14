@@ -13,3 +13,8 @@
 
 - Add "History" tab that shows recently played videos
 - Add filters for channels, playlists, videos and search terms
+
+## Bugs
+
+- Ensure randomness for both playlists and videos
+- Add tests
