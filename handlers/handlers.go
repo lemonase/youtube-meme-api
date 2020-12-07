@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"text/template"
 
 	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
@@ -13,19 +14,30 @@ import (
 
 // TemplateData - The data the goes into the served html page
 type TemplateData struct {
-	SiteTitle string `json:"siteTitle"`
-	Title     string `json:"title"`
-	VideoID   string `json:"videoID"`
+	SiteTitle     string `json:"siteTitle"`
+	Title         string `json:"title"`
+	VideoID       string `json:"videoID"`
+	PublishedDate string `json:"publishedDate"`
 }
 
 // Home - Displays the home page
 func Home(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
+
+	item := youtube.GetRandomPlaylistItem()
+	id := item.ContentDetails.VideoId
+	date := item.ContentDetails.VideoPublishedAt
+	dateSlice := strings.Split(date, "-")
+	pubDate := dateSlice[0]
+
+	date = date[:strings.LastIndex(date, "-")]
+
 	tmpl := template.Must(template.ParseFiles("html/index.html"))
 	data := &TemplateData{
-		SiteTitle: "YouTube Meme Shuffle 🔀",
-		Title:     "YouTube Meme Shuffle",
-		VideoID:   youtube.GetRandomPlaylistItem().ContentDetails.VideoId,
+		SiteTitle:     "YT Meme Shuffle 🔀",
+		Title:         "Welcome to the Meme Shuffler",
+		VideoID:       id,
+		PublishedDate: pubDate,
 	}
 
 	tmpl.Execute(w, data)
