@@ -34,7 +34,8 @@ Recommendations can be added using [this form](https://docs.google.com/forms/d/1
 ### Bash
 
 ```shell
-endpoint="http://localhost:8000/api/v1/random/playlist/item"
+
+endpoint="https://youtube-meme-api.herokuapp.com/api/v1/random/playlist/item"
 vid_id="$(curl -sSL $endpoint | jq .contentDetails.videoId | sed 's/"//g')"
 vid_url="https://www.youtube.com/watch?v=$vid_id"
 
@@ -48,7 +49,7 @@ open $vid_url
 ### PowerShell
 
 ```powershell
-$endpoint = "http://localhost:8000/api/v1/random/playlist/item"
+$endpoint = "https://youtube-meme-api.herokuapp.com/api/v1/random/playlist/item"
 $vid_id = ((iwr "$endpoint").Content | ConvertFrom-Json).contentDetails.videoId
 $vid_url = "https://www.youtube.com/watch?v=$vid_id"
 
