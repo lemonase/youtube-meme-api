@@ -8,8 +8,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
-	"github.com/lemonase/youtube-meme-api/wrappers/youtube"
+	"github.com/lemonase/youtube-meme-api/api-wrappers/sheets"
+	"github.com/lemonase/youtube-meme-api/api-wrappers/youtube"
 )
 
 // TemplateData - The data the goes into the served html page
