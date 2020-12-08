@@ -173,11 +173,7 @@ func RandomChannel(w http.ResponseWriter, r *http.Request) {
 // FetchAllYoutubeInfoFromSheet - Gets sheet values, resets responses and fetches youtube data
 func FetchAllYoutubeInfoFromSheet(forceRefresh bool) {
 	sheets.FetchAllValues()
-
-	youtube.ChannelResponses = nil
-	youtube.PlaylistResponses = nil
-	youtube.VideoResponses = nil
-
+	youtube.ChannelResponses, youtube.PlaylistResponses, youtube.VideoResponses = nil, nil, nil
 	youtube.FetchOrReadAll(forceRefresh)
 }
 

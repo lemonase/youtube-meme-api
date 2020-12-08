@@ -17,7 +17,6 @@ var (
 )
 
 func handleArgs() {
-
 	// flag parsing
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
@@ -48,7 +47,6 @@ func handleArgs() {
 	if strings.Index(*port, ":") == -1 {
 		*port = ":" + *port
 	}
-
 }
 
 func main() {

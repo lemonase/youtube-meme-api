@@ -196,11 +196,10 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 // FetchOrReadAll - Fetches all content types from the Youtube API
 func FetchOrReadAll(forceRefresh bool) {
 	log.Println(":: Fetching All YouTube Data ::")
-
-	FetchOrRead("channel", forceRefresh)
-	FetchOrRead("playlist", forceRefresh)
-	FetchOrRead("playlistItem", forceRefresh)
-	FetchOrRead("video", forceRefresh)
+	contentTypes := []string{"channel", "playlist", "playlistItem", "video"}
+	for _, contentType := range contentTypes {
+		FetchOrRead(contentType, forceRefresh)
+	}
 }
 
 // FetchAllType - Fetches responses for all of a given type
