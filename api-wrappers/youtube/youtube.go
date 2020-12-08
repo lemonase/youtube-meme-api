@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lemonase/youtube-meme-api/api-wrappers/sheets"
 	"github.com/lemonase/youtube-meme-api/client"
-	"github.com/lemonase/youtube-meme-api/wrappers/sheets"
 	"google.golang.org/api/youtube/v3"
 )
 
