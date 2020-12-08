@@ -4,6 +4,7 @@
 
 ### Backend
 
+- Check the "status" of a video (if it is unavailable)
 - Handle search terms in column G on sheet
 - Add google sheet function to update API server when data changes instead of calling it manually
 - Use database instead of storing responses in json files
