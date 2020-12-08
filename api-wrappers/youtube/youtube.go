@@ -97,7 +97,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 			}
 		} else {
 			log.Printf("	Fetching Channel Info From YouTube API\n")
-			FetchAllChannels()
+			FetchAllType("channels")
 			j, err := json.Marshal(ChannelResponses)
 			if err != nil {
 				log.Fatalf("Error marshalling json")
@@ -122,7 +122,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 			}
 		} else {
 			log.Printf("	Fetching Playlist Info From YouTube API\n")
-			FetchAllPlaylists()
+			FetchAllType("playlists")
 			j, err := json.Marshal(PlaylistResponses)
 			if err != nil {
 				log.Fatalf("Error marshalling json")
@@ -147,7 +147,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 			}
 		} else {
 			log.Printf("	Fetching Playlist Items From YouTube API\n")
-			FetchAllPlaylistItems()
+			FetchAllType("playlistItems")
 			j, err := json.Marshal(PlaylistItemResponses)
 			if err != nil {
 				log.Fatalf("Error marshalling json")
@@ -176,7 +176,7 @@ func FetchOrRead(pageType string, forceRefresh bool) {
 			}
 		} else {
 			log.Printf("	Fetching Videos From YouTube API\n")
-			FetchAllVideos()
+			FetchAllType("videos")
 			j, err := json.Marshal(VideoResponses)
 			if err != nil {
 				log.Fatalf("Error marshalling json")
@@ -203,39 +203,35 @@ func FetchOrReadAll(forceRefresh bool) {
 	FetchOrRead("video", forceRefresh)
 }
 
-// FetchAllChannels - Fetches youtube data for all channel values on the sheet
-func FetchAllChannels() {
-	for _, url := range sheets.ChannelValues {
-		channelURL := string(url[0].(string))
-		ChannelResponses = append(ChannelResponses, GetChannelResponseFromURL(channelURL))
-	}
-	for _, channelRes := range ChannelResponses {
-		uploadPl := GetPlaylistResponseFromID(channelRes.Items[0].ContentDetails.RelatedPlaylists.Uploads)
-		PlaylistResponses = append(PlaylistResponses, uploadPl)
-	}
-}
-
-// FetchAllPlaylists - Fetches youtube data for all playlist values on the sheet
-func FetchAllPlaylists() {
-	for _, url := range sheets.PlaylistValues {
-		playlistURL := string(url[0].(string))
-		PlaylistResponses = append(PlaylistResponses, GetPlaylistRepsonseFromURL(playlistURL))
-	}
-}
-
-// FetchAllPlaylistItems - Fetch all playlist items from playlist responses
-func FetchAllPlaylistItems() {
-	for _, pl := range PlaylistResponses {
-		PlaylistItemResponses = append(PlaylistItemResponses, GetAllPlaylistItemResponsesFromPlaylistID(pl.Items[0].Id)...)
-		playlistItemCount += len(pl.Items)
-	}
-}
-
-// FetchAllVideos - Fetches youtube data for all the videos on the sheet
-func FetchAllVideos() {
-	for _, url := range sheets.VideoValues {
-		videoURL := string(url[0].(string))
-		VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
+// FetchAllType - Fetches responses for all of a given type
+func FetchAllType(contentType string) {
+	switch contentType {
+	case "channel":
+		for _, url := range sheets.ChannelValues {
+			channelURL := string(url[0].(string))
+			ChannelResponses = append(ChannelResponses, GetChannelResponseFromURL(channelURL))
+		}
+		for _, channelRes := range ChannelResponses {
+			uploadPl := GetPlaylistResponseFromID(channelRes.Items[0].ContentDetails.RelatedPlaylists.Uploads)
+			PlaylistResponses = append(PlaylistResponses, uploadPl)
+		}
+	case "playlist":
+		for _, url := range sheets.PlaylistValues {
+			playlistURL := string(url[0].(string))
+			PlaylistResponses = append(PlaylistResponses, GetPlaylistRepsonseFromURL(playlistURL))
+		}
+	case "playlistItems":
+		for _, pl := range PlaylistResponses {
+			PlaylistItemResponses = append(PlaylistItemResponses, GetAllPlaylistItemResponsesFromPlaylistID(pl.Items[0].Id)...)
+			playlistItemCount += len(pl.Items)
+		}
+	case "videos":
+		for _, url := range sheets.VideoValues {
+			videoURL := string(url[0].(string))
+			VideoResponses = append(VideoResponses, GetVideoResponseFromURL(videoURL))
+		}
+	default:
+		log.Fatalf("Unknown content type for FetchAllType\n")
 	}
 }
 

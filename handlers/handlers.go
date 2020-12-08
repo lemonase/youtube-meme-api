@@ -30,8 +30,6 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	dateSlice := strings.Split(date, "-")
 	pubDate := dateSlice[0]
 
-	date = date[:strings.LastIndex(date, "-")]
-
 	tmpl := template.Must(template.ParseFiles("html/index.html"))
 	data := &TemplateData{
 		SiteTitle:     "YT Meme Shuffle 🔀",
