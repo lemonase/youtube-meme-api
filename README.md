@@ -18,12 +18,12 @@ Additional video/playlist info is retrieved from the [YouTube Data API](https://
 
 ## HTTP Endpoints
 
-Hosted on Heroku:
-<https://youtube-meme-api.herokuapp.com/>
+Hosted on Heroku: <https://youtube-meme-api.herokuapp.com>
 
 ## GET
 
 - `/` - Home page
+- `/api/` - See all available endpoints
 
 ### API "Random" Endpoints
 
@@ -32,7 +32,7 @@ Hosted on Heroku:
 - `/api/v1/random/playlist/item` - Gets a random playlist item (playlist video)
 - `/api/v1/random/channel` - Gets a random channel
 
-### API "Aggregate" Endpoints
+### API "List" Endpoints
 
 - `/api/v1/all/video` - Gets all videos
 - `/api/v1/all/playlist` - Gets all playlists
@@ -43,7 +43,8 @@ Hosted on Heroku:
 
 ### Web browser
 
-Go to https://youtube-meme-api.herokuapp.com/api to see all endpoints.
+Go to <https://youtube-meme-api.herokuapp.com>
+The default video is a randomized playlist item from the sheet.
 
 ### Bash
 
